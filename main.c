@@ -3,6 +3,7 @@
 #include <time.h>
 #include "deck.h"
 #include "player.h"
+#include "strategy.h"
 
 // DECLARE CONSTANTS (WILL BE USER INPUT FROM THE UI [IMPLEMENTED LATER])
 #define NUM_DECKS 6
@@ -12,11 +13,14 @@
 #define RSA False
 #define MAX_SPLITS 4
 #define BJ_PAY 1.5
-#define PEN = 0.8
+#define PEN 0.8
 
 #define NUM_SIMULATIONS 5
 #define BANKROLL 1000
 #define WAGER 1
+
+#define STRAT_ROWS 40 // Player hand possibilities
+#define STRAT_COLS 10 // Dealer upcards
 
 
 int main() {
@@ -50,7 +54,8 @@ int main() {
         addCardToHand(&player.hand, dealCard(&deck));
         addCardToHand(&dealer.hand, dealCard(&deck));
 
-        // Check for naturals
+    // --CHEK FOR NATURALS
+        // Player & dealer both natural - TIE
         if (getHandValue(&player.hand) == 21 && getHandValue(&dealer.hand) == 21)
         {
             freeHand(&dealer.hand);
@@ -58,6 +63,7 @@ int main() {
             freeDeck(&deck);
             continue;
         }
+        // Player natural - PLAYER WINS
         else if (getHandValue(&player.hand) == 21)
         {
             num_hands_won += 1;
@@ -67,6 +73,7 @@ int main() {
             freeDeck(&deck);
             continue;
         }
+        // Dealer natural - DEALER WINS
         else if (getHandValue(&dealer.hand) == 21)
         {
             net_credits -= WAGER;
@@ -75,18 +82,26 @@ int main() {
             freeDeck(&deck);
             continue;
         }
+        
+        // Allocate memory for the strategy sheet 
+        // 40 rows (soft, hard, splits, surrenders AND 10 columns [2-A]
+        char strategy[STRAT_ROWS][STRAT_COLS];
 
-        // Player's turn
+        readStrategySheet("strategy.csv", strategy);
+
+        // Player's turn to act
         while (1) {
             printf("Player's hand value: %d\n", getHandValue(&player.hand));
             printf("Dealer's hand value: %d\n", getHandValue(&dealer.hand));
-            int choice = 0;
+            
+            // THIS IS WHERE THE STRATEGY IMPLEMENTATION NEEDS TO GO
+                // Function determinAction() comes from  strategy.c 
+            int choice = determineAction(&player.hand, &dealer.hand, strategy);
 
             if (choice == 1) {
                 addCardToHand(&player.hand, dealCard(&deck));
                 if (isBust(&player.hand)) {
                     printf("Player busts with value: %d\n", getHandValue(&player.hand));
-                    num_hands_won -= 1;
 
                 }
             } else {
@@ -97,7 +112,7 @@ int main() {
         // Dealer's turn (simple rule: hit until 17+)
         while (getHandValue(&dealer.hand) < 17) {
             addCardToHand(&dealer.hand, dealCard(&deck));
-            printf("HITTING - Dealer's NEW hand value: %d\n", getHandValue(&dealer.hand));
+            printf("DEALER HITTING - Dealer's NEW hand value: %d\n", getHandValue(&dealer.hand));
             
         }
 
