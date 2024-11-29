@@ -38,13 +38,24 @@ int determineAction(const Hand *playerHand, const Hand *dealerHand, char (*strat
     int dealerUpcard = getHandValue(dealerHand);
 
 
+    char decision = strategyArray[playerTotal][dealerUpcard]; // Get decision from strategy array
+
     if (playerTotal < STRAT_ROWS && dealerUpcard < STRAT_COLS) {
         printf("Action for player hand %d and dealer upcard %d: %c\n",
-               playerTotal, dealerUpcard, strategyArray[playerTotal][dealerUpcard]);
+               playerTotal, dealerUpcard, decision);
+        if (decision == 'H')
+        {
+            printf("Player Hitting\n");
+            return 1;
+        }
+        else if (decision == 'S')
+        {
+            printf("Player Standing\n");
+            return 0;
+        }
         return strategyArray[playerTotal][dealerUpcard]; // Return action as a character
     } else {
         fprintf(stderr, "Error: Invalid hand values.\n");
         return -1; // Return error code
     }
-    return 0;
 }
