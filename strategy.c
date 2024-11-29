@@ -2,7 +2,7 @@
 #include <string.h>
 #include "strategy.h"
 
-#define STRAT_ROWS 40 // Number of player hand conditions
+#define STRAT_ROWS 37 // Number of player hand conditions
 #define STRAT_COLS 10 // Dealer's upcards (2 to Ace)
 
 void readStrategySheet(const char *filename, char (*strategyArray)[STRAT_COLS])
@@ -31,7 +31,7 @@ void readStrategySheet(const char *filename, char (*strategyArray)[STRAT_COLS])
     fclose(file);
 }
 
-int determineAction(const Hand *playerHand, const Hand *dealerHand, char (*strategyArray)[STRAT_COLS])
+char determineAction(const Hand *playerHand, const Hand *dealerHand, char (*strategyArray)[STRAT_COLS])
 {
     
     int playerTotal = getHandValue(playerHand);
@@ -39,23 +39,6 @@ int determineAction(const Hand *playerHand, const Hand *dealerHand, char (*strat
 
 
     char decision = strategyArray[playerTotal][dealerUpcard]; // Get decision from strategy array
-
-    if (playerTotal < STRAT_ROWS && dealerUpcard < STRAT_COLS) {
-        printf("Action for player hand %d and dealer upcard %d: %c\n",
-               playerTotal, dealerUpcard, decision);
-        if (decision == 'H')
-        {
-            printf("Player Hitting\n");
-            return 1;
-        }
-        else if (decision == 'S')
-        {
-            printf("Player Standing\n");
-            return 0;
-        }
-        return strategyArray[playerTotal][dealerUpcard]; // Return action as a character
-    } else {
-        fprintf(stderr, "Error: Invalid hand values.\n");
-        return -1; // Return error code
-    }
+    return decision;
+    
 }

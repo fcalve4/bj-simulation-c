@@ -19,7 +19,7 @@
 #define BANKROLL 1000
 #define WAGER 1
 
-#define STRAT_ROWS 40 // Player hand possibilities
+#define STRAT_ROWS 37 // Player hand possibilities
 #define STRAT_COLS 10 // Dealer upcards
 
 
@@ -79,16 +79,56 @@ int main() {
             
             // THIS IS WHERE THE STRATEGY IMPLEMENTATION GOES
                 // Function determinAction() comes from  strategy.c 
-            int choice = determineAction(&player.hand, &dealer.hand, strategy);
+            char action = determineAction(&player.hand, &dealer.hand, strategy);
 
-            if (choice == 1) {
+
+            if (action == 'H')
+            {
+                printf("Player Hitting\n");
                 addCardToHand(&player.hand, dealCard(&deck));
                 if (isBust(&player.hand)) {
                     printf("Player busts with value: %d\n", getHandValue(&player.hand));
                     break;
                 }
-            } else {
+            }
+            else if (action == 'S')
+            {
+                printf("Player Standing\n");
                 break;
+            }
+            else if (action == 'P')
+            {
+                printf("split\n");
+                break;
+            }
+            else if (action == 'D')
+            {
+                printf("dobule/hit\n");
+                break;
+            }
+            else if (action == 'T')
+            {
+                printf("double/stand\n");
+                break;
+            }
+            else if (action == 'X')
+            {
+                printf("surredner/stand\n");
+                break;
+            }
+            else if (action == 'Y')
+            {
+                printf("surrender/hit\n");
+                break;
+            }
+            else if (action == 'Z')
+            {
+                printf("Surrender/split\n");
+                break;
+            }
+            else{
+                printf("ERROR: INVALID DECISION SELECTED");
+                break; 
             }
         }
 
@@ -117,6 +157,7 @@ int main() {
         printf("Iteration: %d | Net Credits: %d | Num Hands Won: %d\n", i + 1, net_credits, num_hands_won);
     }
 
-    
     return 0;
+
 }
+
