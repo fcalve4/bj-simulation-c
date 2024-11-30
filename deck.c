@@ -49,6 +49,5 @@ Card dealCard(Deck *deck) {
         fprintf(stderr, "Error: No more cards in the deck.\n");
         exit(1);
     }
-    printf("Dealing card #%d\n", deck->top);
     return deck->cards[deck->top++];
 }
