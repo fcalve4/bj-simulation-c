@@ -27,11 +27,13 @@
 
 
 int main() {
-
     // Initialize variables & start clock
     clock_t start, end;
     double cpu_time_used;
     start = clock();
+
+    // Initialize output file
+    FILE *out = fopen("output.txt", "w");
 
     // Seed random numbers
     srand(time(NULL));
@@ -84,7 +86,7 @@ int main() {
             // --CHEK FOR NATURALS
             // BOTH PLAYERS HAVE NATURALS. PUSH
             if (getHandValue(&dealer.hand) == 21 && getHandValue(&player.hand) == 21) {
-                printf("push blackjacks!\n)");
+                fprintf(out, "push blackjacks!\n)");
                 num_credits_won += WAGER;
                 num_credits_wagered += WAGER;
                 freeHand(&dealer.hand);
@@ -93,7 +95,7 @@ int main() {
             }
             // Dealer natural
             if (getHandValue(&dealer.hand) == 21) {
-                printf("blackjack for dealer\n)");
+                fprintf(out, "blackjack for dealer\n)");
                 num_credits_wagered += WAGER;
                 net_credits -= WAGER;
                 freeHand(&dealer.hand);
@@ -102,7 +104,7 @@ int main() {
             }
             // Player natural - PLAYER WINS
             if (getHandValue(&player.hand) == 21) {
-                printf("BLACKJACK FOR PLAYER!\n");
+                fprintf(out, "BLACKJACK FOR PLAYER!\n");
                 num_credits_wagered += WAGER;
                 num_credits_won += (WAGER * BJ_PAY) + WAGER;
                 
@@ -113,8 +115,8 @@ int main() {
                 continue;
             }
 
-            printf("Player's hand value: %d\n", getHandValue(&player.hand));
-            printf("Dealer's hand value: %d\n", getHandValue(&dealer.hand));
+            fprintf(out, "Player's hand value: %d\n", getHandValue(&player.hand));
+            fprintf(out, "Dealer's hand value: %d\n", getHandValue(&dealer.hand));
 
             // While loop to allow the player to act multiple times
             while (1) {
@@ -125,65 +127,65 @@ int main() {
                 // Player hits - add 1 card and check for bust
                 if (action == 'H')
                 {
-                    printf("hit\n");
+                    fprintf(out, "hit\n");
                     addCardToHand(&player.hand, dealCard(&deck));
                     if (isBust(&player.hand)) {
                         net_credits -= WAGER;
                         num_credits_wagered += WAGER;
-                        printf("Player busts with value: %d\n", getHandValue(&player.hand));
+                        fprintf(out, "Player busts with value: %d\n", getHandValue(&player.hand));
                         break;
                     }
                 }
                 // Player stands - No action needed
                 else if (action == 'S') {
-                    printf("stand\n");
+                    fprintf(out, "stand\n");
                     num_credits_wagered += WAGER;
                     break;
                 }
                 else if (action == 'P') {
-                    printf("split\n");
+                    fprintf(out, "split\n");
                     num_credits_wagered += WAGER;
                     break;
                 }
                 else if (action == 'D') {
-                    printf("double/hit\n");
+                    fprintf(out, "double/hit\n");
                     addCardToHand(&player.hand, dealCard(&deck));
                     if (isBust(&player.hand)) {
-                        printf("Player busts with value: %d\n", getHandValue(&player.hand));
+                        fprintf(out, "Player busts with value: %d\n", getHandValue(&player.hand));
                         num_credits_wagered += 2 * WAGER;
                         break;
                     }
                 }
                 else if (action == 'T') {
-                    printf("double/stand\n");
+                    fprintf(out, "double/stand\n");
                     addCardToHand(&player.hand, dealCard(&deck));
                     if (isBust(&player.hand)) {
-                        printf("Player busts with value: %d\n", getHandValue(&player.hand));
+                        fprintf(out, "Player busts with value: %d\n", getHandValue(&player.hand));
                         num_credits_wagered += WAGER;
                         break;
                     }
                 }
                 else if (action == 'X') {
-                    printf("surredner/stand\n");
+                    fprintf(out, "surredner/stand\n");
                     num_credits_wagered += WAGER;
                     break;
                 }
                 else if (action == 'Y') {
-                    printf("surrender/hit\n");
+                    fprintf(out, "surrender/hit\n");
                     addCardToHand(&player.hand, dealCard(&deck));
                     if (isBust(&player.hand)) {
-                        printf("Player busts with value: %d\n", getHandValue(&player.hand));
+                        fprintf(out, "Player busts with value: %d\n", getHandValue(&player.hand));
                         num_credits_wagered += WAGER;
                         break;
                     }
                 }
                 else if (action == 'Z') {
-                    printf("Surrender/split\n");
+                    fprintf(out, "Surrender/split\n");
                     num_credits_wagered += WAGER;
                     break;
                 }
                 else {
-                    printf("ERROR: INVALID DECISION SELECTED");
+                    fprintf(out, "ERROR: INVALID DECISION SELECTED");
                     break;
                 }
             }
@@ -196,28 +198,28 @@ int main() {
             // Dealer's turn (simple rule: hit until 17+)
             while (getHandValue(&dealer.hand) < 17) {
                 addCardToHand(&dealer.hand, dealCard(&deck));
-                printf("DEALER HITTING - Dealer's NEW hand value: %d\n", getHandValue(&dealer.hand));
+                fprintf(out, "DEALER HITTING - Dealer's NEW hand value: %d\n", getHandValue(&dealer.hand));
             }
             // Determine winner, Player wins if dealer busts or has a higher hand
             if (isBust(&dealer.hand) || getHandValue(&player.hand) > getHandValue(&dealer.hand)) {
-                printf("Player wins!\n");
+                fprintf(out, "Player wins!\n");
                 net_credits += WAGER;
                 num_credits_won += 2 * WAGER;
                 num_hands_won += 1;
             }
             else if (getHandValue(&player.hand) < getHandValue(&dealer.hand)) {
-                printf("Dealer wins!\n");
+                fprintf(out, "Dealer wins!\n");
                 net_credits -= WAGER;
             }
             else {
-                printf("It's a tie!\n");
+                fprintf(out, "It's a tie!\n");
             }
             freeHand(&dealer.hand);
             freeHand(&player.hand);
             
             rtp_percent = ((float) num_credits_won / num_credits_wagered) * 100;
-            printf("\tShoe #: %d |Hand #: %d | Net Credits: %d | # Hands Won: %d\n", i + 1, total_num_hands, net_credits, num_hands_won);
-            printf("\tRTP: %.10f | Num Credits Won: %d | Num Creds Wagered: %d\n", rtp_percent, num_credits_won, num_credits_wagered);
+            fprintf(out, "\tShoe #: %d |Hand #: %d | Net Credits: %d | # Hands Won: %d\n", i + 1, total_num_hands, net_credits, num_hands_won);
+            fprintf(out, "\tRTP: %.10f | Num Credits Won: %d | Num Creds Wagered: %d\n", rtp_percent, num_credits_won, num_credits_wagered);
         }
         freeDeck(&deck);
     }
@@ -225,7 +227,7 @@ int main() {
     // Stop the clock, calculate the elapsed time, print the result
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("Execution Time: %f seconds\n", cpu_time_used);
+    fprintf(out, "Execution Time: %f seconds\n", cpu_time_used);
 
     return 0;
 
