@@ -227,7 +227,7 @@ int main() {
     // Stop the clock, calculate the elapsed time, print the result
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    fprintf(out, "Execution Time: %f seconds\n", cpu_time_used);
+    printf("Execution Time: %f seconds\n", cpu_time_used);
 
     return 0;
 
