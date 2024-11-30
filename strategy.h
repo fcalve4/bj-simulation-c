@@ -6,6 +6,7 @@
 
 #include "hand.h"
 
-char determineAction(const Hand *playerHand, const Hand *dealerHand, char (*strategyArray)[STRAT_COLS]);
+char determineAction(const Hand *playerHand, int dealerUpcard, char (*strategyArray)[STRAT_COLS]);
 void readStrategySheet(const char *filename, char (*strategyArray)[STRAT_COLS]);
+
 #endif

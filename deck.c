@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
+// "Deck" & "Shoe" are interchangeable in this program
 void initDeck(Deck *deck, int numDecks) {
     deck->capacity = 52 * numDecks;
     deck->numCards = deck->capacity;
@@ -35,7 +35,7 @@ void freeDeck(Deck *deck) {
 }
 
 void shuffleDeck(Deck *deck) {
-    for (int i = 51; i > 0; i--) {
+    for (int i = deck->capacity - 1; i > 0; i--) {
         int j = rand() % (i + 1);
         Card temp = deck->cards[i];
         deck->cards[i] = deck->cards[j];
@@ -45,9 +45,10 @@ void shuffleDeck(Deck *deck) {
 }
 
 Card dealCard(Deck *deck) {
-    if (deck->top >= 52) {
+    if (deck->cards == NULL || deck->top >= deck->capacity) {
         fprintf(stderr, "Error: No more cards in the deck.\n");
         exit(1);
     }
+    printf("Dealing card #%d\n", deck->top);
     return deck->cards[deck->top++];
 }

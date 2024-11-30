@@ -23,7 +23,8 @@ void initHand(Hand *hand) {
 }
 
 int hasSoftAce(const Hand *hand) {
-    int value, aceCount;
+    int value = 0;
+    int aceCount = 0;
     for (int i = 0; i < hand->numCards; i++) {
         if (hand->cards[i].rank == 1) {
             aceCount++;
@@ -47,23 +48,43 @@ int canSurrender(const Hand *hand) {
 }
 
 void addCardToHand(Hand *hand, Card card) {
+    // Sanity check for the Hand pointer
+    if (hand == NULL) {
+        fprintf(stderr, "Error: Hand pointer is NULL.\n");
+        exit(1);
+    }
+
+    // Sanity check for the Cards pointer
+    if (hand->cards == NULL) {
+        fprintf(stderr, "Error: Hand->cards pointer is NULL. Ensure hand is initialized properly.\n");
+        exit(1);
+    }
+
+    // Check if resizing is necessary
     if (hand->numCards >= hand->capacity) {
         hand->capacity *= 2; // Double the capacity
-        hand->cards = (Card *)realloc(hand->cards, hand->capacity * sizeof(Card));
+        Card *newCards = realloc(hand->cards, hand->capacity * sizeof(Card));
 
-        if (hand->cards == NULL) {
+        // Check if realloc failed
+        if (newCards == NULL) {
             fprintf(stderr, "Error: Memory reallocation for hand failed.\n");
+            free(hand->cards); // Free existing memory before exiting
             exit(1);
         }
+
+        hand->cards = newCards; // Update the pointer to the reallocated memory
     }
+
+    // Add the card to the hand
     hand->cards[hand->numCards++] = card;
 
-    // Update soft/hard status
+    // Update the hand's attributes
     hand->softOrHard = hasSoftAce(hand);
     hand->doubleable = canDouble(hand);
     hand->splittable = canSplit(hand);
     hand->surrenderable = canSurrender(hand);
 }
+
 
 void freeHand(Hand *hand) {
     // Free the dynamically allocated memory and avoid dangling pointer
