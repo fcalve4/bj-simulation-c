@@ -10,18 +10,12 @@
 
 int main() {
 
-    char strategy[STRAT_ROWS][STRAT_COLS];
+    Deck deck;
 
-    readStrategySheet("strategy.csv", strategy);
+    initDeck(&deck, 1);
 
-    
-    for (int i = 0; i < STRAT_ROWS; i++) {
-        printf("row #%d ", i+ 1);
-        for (int j=0; j < STRAT_COLS; j++) {
-            printf("%c ", strategy[i][j]);
-        }
-        printf("\n");
+    for (int i = 0; i < 52; i++) {
+        printf("%d\n", deck.cards[i]);
     }
-    
     return 0;
 }

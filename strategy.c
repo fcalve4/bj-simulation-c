@@ -33,17 +33,15 @@ void readStrategySheet(const char *filename, char (*strategyArray)[STRAT_COLS])
 
 char determineAction(const Hand *playerHand, int dealerUpcard, char (*strategyArray)[STRAT_COLS])
 {
-    
     int playerTotal = getHandValue(playerHand);
-
     int rowIndex;
 
     if (canSplit(playerHand))
     {
-        Card card = playerHand->cards[0]; // Store the card that we have two of
+        int value = playerHand->cards[0].rank; // Store the card that we have two of
         // For splitable hands, decisions start at row #28 and index 27 (zero index for array)
         // The row index will stay at 27 for a deuce, and increase by one for every value we increase, so we subtract 2 and add the value of the single card
-        rowIndex = 27 + card.rank - 2;
+        rowIndex = 27 + value - 2;
 
         return strategyArray[rowIndex][dealerUpcard - 2];
     }
@@ -65,4 +63,3 @@ char determineAction(const Hand *playerHand, int dealerUpcard, char (*strategyAr
     return '?'; // Return '?' if the strategy sheet does not contain a decision for the given hand
     
 }
-

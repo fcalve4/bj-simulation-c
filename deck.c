@@ -19,7 +19,12 @@ void initDeck(Deck *deck, int numDecks) {
     for (int d = 0; d < numDecks; d++) {
         for (int rank = 1; rank <= 13; rank++) {
             for (int count = 0; count < 4; count++) {
-                deck->cards[index].rank = rank;
+                // adjust to only add tens to the deck and not 11,12,13
+                if (rank <= 10) {
+                    deck->cards[index].rank = rank;
+                } else {
+                    deck->cards[index].rank = 10;
+                }
                 index++;
             }
         }

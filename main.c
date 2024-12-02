@@ -67,6 +67,7 @@ int main() {
         // MAIN HAND LOOP
             // While loop goes until the 'cut card' is reached
         while (deck.top <= deck.capacity * PEN) { 
+            fprintf(out, "New Hand Starting:\n");
             total_num_hands++; // Increment counter (temporary)
             // Clear previous hand data & reinit
             initHand(&player.hand);
@@ -83,10 +84,13 @@ int main() {
             // Deal the dealer another hand (this is to check for naturals)
             addCardToHand(&dealer.hand, dealCard(&deck));
 
+            fprintf(out, "Player's hand value: %d\n", getHandValue(&player.hand));
+            fprintf(out, "Dealer's hand value: %d\n", getHandValue(&dealer.hand));
+
             // --CHEK FOR NATURALS
             // BOTH PLAYERS HAVE NATURALS. PUSH
             if (getHandValue(&dealer.hand) == 21 && getHandValue(&player.hand) == 21) {
-                fprintf(out, "push blackjacks!\n)");
+                fprintf(out, "push blackjacks!\n");
                 num_credits_won += WAGER;
                 num_credits_wagered += WAGER;
                 freeHand(&dealer.hand);
@@ -95,7 +99,7 @@ int main() {
             }
             // Dealer natural
             if (getHandValue(&dealer.hand) == 21) {
-                fprintf(out, "blackjack for dealer\n)");
+                fprintf(out, "blackjack for dealer\n");
                 num_credits_wagered += WAGER;
                 net_credits -= WAGER;
                 freeHand(&dealer.hand);
@@ -114,9 +118,6 @@ int main() {
                 freeHand(&player.hand);
                 continue;
             }
-
-            fprintf(out, "Player's hand value: %d\n", getHandValue(&player.hand));
-            fprintf(out, "Dealer's hand value: %d\n", getHandValue(&dealer.hand));
 
             // While loop to allow the player to act multiple times
             while (1) {
@@ -185,7 +186,7 @@ int main() {
                     break;
                 }
                 else {
-                    fprintf(out, "ERROR: INVALID DECISION SELECTED");
+                    fprintf(out, "ERROR: INVALID DECISION SELECTED\n");
                     break;
                 }
             }
