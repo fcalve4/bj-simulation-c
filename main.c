@@ -91,8 +91,6 @@ int main() {
             // BOTH PLAYERS HAVE NATURALS. PUSH
             if (getHandValue(&dealer.hand) == 21 && getHandValue(&player.hand) == 21) {
                 fprintf(out, "push blackjacks!\n");
-                num_credits_won += WAGER;
-                num_credits_wagered += WAGER;
                 freeHand(&dealer.hand);
                 freeHand(&player.hand);
                 continue;
@@ -100,8 +98,6 @@ int main() {
             // Dealer natural
             if (getHandValue(&dealer.hand) == 21) {
                 fprintf(out, "blackjack for dealer\n");
-                num_credits_wagered += WAGER;
-                net_credits -= WAGER;
                 freeHand(&dealer.hand);
                 freeHand(&player.hand);
                 continue;
@@ -109,11 +105,6 @@ int main() {
             // Player natural - PLAYER WINS
             if (getHandValue(&player.hand) == 21) {
                 fprintf(out, "BLACKJACK FOR PLAYER!\n");
-                num_credits_wagered += WAGER;
-                num_credits_won += (WAGER * BJ_PAY) + WAGER;
-                
-                num_hands_won += 1;
-                net_credits += WAGER * BJ_PAY;
                 freeHand(&dealer.hand);
                 freeHand(&player.hand);
                 continue;
@@ -131,8 +122,6 @@ int main() {
                     fprintf(out, "hit\n");
                     addCardToHand(&player.hand, dealCard(&deck));
                     if (isBust(&player.hand)) {
-                        net_credits -= WAGER;
-                        num_credits_wagered += WAGER;
                         fprintf(out, "Player busts with value: %d\n", getHandValue(&player.hand));
                         break;
                     }
@@ -140,12 +129,10 @@ int main() {
                 // Player stands - No action needed
                 else if (action == 'S') {
                     fprintf(out, "stand\n");
-                    num_credits_wagered += WAGER;
                     break;
                 }
                 else if (action == 'P') {
                     fprintf(out, "split\n");
-                    num_credits_wagered += WAGER;
                     break;
                 }
                 else if (action == 'D') {
@@ -153,7 +140,6 @@ int main() {
                     addCardToHand(&player.hand, dealCard(&deck));
                     if (isBust(&player.hand)) {
                         fprintf(out, "Player busts with value: %d\n", getHandValue(&player.hand));
-                        num_credits_wagered += 2 * WAGER;
                         break;
                     }
                 }
@@ -162,13 +148,11 @@ int main() {
                     addCardToHand(&player.hand, dealCard(&deck));
                     if (isBust(&player.hand)) {
                         fprintf(out, "Player busts with value: %d\n", getHandValue(&player.hand));
-                        num_credits_wagered += WAGER;
                         break;
                     }
                 }
                 else if (action == 'X') {
                     fprintf(out, "surredner/stand\n");
-                    num_credits_wagered += WAGER;
                     break;
                 }
                 else if (action == 'Y') {
@@ -176,13 +160,11 @@ int main() {
                     addCardToHand(&player.hand, dealCard(&deck));
                     if (isBust(&player.hand)) {
                         fprintf(out, "Player busts with value: %d\n", getHandValue(&player.hand));
-                        num_credits_wagered += WAGER;
                         break;
                     }
                 }
                 else if (action == 'Z') {
                     fprintf(out, "Surrender/split\n");
-                    num_credits_wagered += WAGER;
                     break;
                 }
                 else {
@@ -204,13 +186,9 @@ int main() {
             // Determine winner, Player wins if dealer busts or has a higher hand
             if (isBust(&dealer.hand) || getHandValue(&player.hand) > getHandValue(&dealer.hand)) {
                 fprintf(out, "Player wins!\n");
-                net_credits += WAGER;
-                num_credits_won += 2 * WAGER;
-                num_hands_won += 1;
             }
             else if (getHandValue(&player.hand) < getHandValue(&dealer.hand)) {
                 fprintf(out, "Dealer wins!\n");
-                net_credits -= WAGER;
             }
             else {
                 fprintf(out, "It's a tie!\n");
