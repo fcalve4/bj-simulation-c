@@ -47,6 +47,7 @@ int canSurrender(const Hand *hand) {
     return hand->numCards == 2;
 }
 
+
 void addCardToHand(Hand *hand, Card card) {
     // Sanity check for the Hand pointer
     if (hand == NULL) {
