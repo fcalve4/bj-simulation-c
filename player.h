@@ -6,12 +6,10 @@
 typedef struct {
     Hand hand;
     int bankroll; // Player's money
+    int wager_size;
 } Player;
 
 // Player functions
-void initPlayer(Player *player, int bankroll);
-void placeBet(Player *player, int bet);
-void winBet(Player *player, int bet);
-void loseBet(Player *player, int bet);
+void initPlayer(Player *player, int bankroll, int wager_size);
 
 #endif
