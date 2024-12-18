@@ -1,3 +1,4 @@
+#include <stdio.h>
 #ifndef STRATEGY_H
 #define STRATEGY_H
 
@@ -7,6 +8,6 @@
 #include "hand.h"
 
 char determineAction(const Hand *playerHand, int dealerUpcard, char (*strategyArray)[STRAT_COLS]);
-void readStrategySheet(const char *filename, char (*strategyArray)[STRAT_COLS]);
+void readStrategySheet(FILE *file, char (*strategyArray)[STRAT_COLS]);
 
 #endif

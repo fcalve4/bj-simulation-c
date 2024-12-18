@@ -26,14 +26,28 @@
 #define STRAT_COLS 10 // Dealer upcards
 
 
-int main() {
-    // Initialize variables & start clock
+int main(int argc, char *argv[]) {
+    // Initialize clock variables & start clock
     clock_t start, end;
     double cpu_time_used;
     start = clock();
 
-    // Initialize output file
-    FILE *out = fopen("output.txt", "w");
+    if (argc != 3) {
+        fprintf(stderr, "Format: %s <strategy.csv> <output.txt>\n", argv[0]);
+        return -1;
+    }
+
+    // Initialize in/out files
+    FILE *strategy_file = fopen(argv[1], "r");
+    if (strategy_file == NULL) {
+        fprintf(stderr, "Error: Unable to open file '%s'.\n", strategy_file);
+        return -1;
+    }
+    FILE *out = fopen(argv[2], "w");
+    if (out == NULL) {
+        fprintf(stderr, "Error: Unable to open file '%s'.\n", out);
+        return -1;
+    }
 
     // Seed random numbers
     srand(time(NULL));
@@ -42,7 +56,7 @@ int main() {
     // 40 rows (soft, hard, splits, surrenders AND 10 columns [2-A]
     char strategy[STRAT_ROWS][STRAT_COLS];
  
-    readStrategySheet("strategy.csv", strategy);
+    readStrategySheet(strategy_file, strategy);
 
     // Initialize some variables
     Deck deck;
@@ -74,7 +88,7 @@ int main() {
             total_num_hands++; // Increment counter (temporary)
             fprintf(out, " --- Shoe #: %d | Hand #: %d | Bankroll: %d | RTP: %.4f\n", i + 1, total_num_hands, bankroll, rtp_percent); 
 
-            // Set the surrender boolean, if this gets set to 1 then the player has surrendered and dealer does not act
+            // Set the surrender boolean, if this gets set to 1 then the player has surrendered and dealer does not need to act
             int surrender_bool = 0;
 
             // Clear previous hand data & reinit

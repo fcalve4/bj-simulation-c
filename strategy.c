@@ -5,14 +5,8 @@
 #define STRAT_ROWS 37 // Number of player hand conditions
 #define STRAT_COLS 10 // Dealer's upcards (2 to Ace)
 
-void readStrategySheet(const char *filename, char (*strategyArray)[STRAT_COLS])
+void readStrategySheet(FILE *file, char (*strategyArray)[STRAT_COLS])
 {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL) {
-        fprintf(stderr, "Error: Unable to open file '%s'.\n", filename);
-        return;
-    }
-
     char line[256];
     int row = 0;
 
@@ -27,7 +21,6 @@ void readStrategySheet(const char *filename, char (*strategyArray)[STRAT_COLS])
         }
         row++;
     }
-
     fclose(file);
 }
 
