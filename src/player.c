@@ -4,5 +4,6 @@
 
 void initPlayer(Player *player) {
     initHand(&player->hand);
+    player->bankroll = 0;
 }
 

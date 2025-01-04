@@ -39,15 +39,7 @@ int main(int argc, char *argv[]) {
 
     // Initialize in/out files
     FILE *strategy_file = fopen(argv[1], "r");
-    if (strategy_file == NULL) {
-        fprintf(stderr, "Error: Unable to open file '%s'.\n", strategy_file);
-        return -1;
-    }
     FILE *out = fopen(argv[2], "w");
-    if (out == NULL) {
-        fprintf(stderr, "Error: Unable to open file '%s'.\n", out);
-        return -1;
-    }
 
     // Seed random numbers
     srand(time(NULL));
@@ -136,9 +128,9 @@ int main(int argc, char *argv[]) {
                 if (getHandValue(&player.hand) == 21) {
                     bankroll += wager * BJ_PAY;
                     total_won += wager * BJ_PAY;
-                    fprintf(out, "adding %d to total_won\n", wager * BJ_PAY);
+                    fprintf(out, "adding %f to total_won\n", wager * BJ_PAY);
                     total_wagered += wager;
-                    fprintf(out, "adding %d to total_wagered\n", wager * BJ_PAY);
+                    fprintf(out, "adding %f to total_wagered\n", wager * BJ_PAY);
                     freeHand(&dealer.hand);
                     freeHand(&player.hand);
                     continue;

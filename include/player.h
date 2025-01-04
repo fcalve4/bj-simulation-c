@@ -5,7 +5,7 @@
 
 typedef struct {
     Hand hand;
-
+    int bankroll;
 } Player;
 
 // Player functions
