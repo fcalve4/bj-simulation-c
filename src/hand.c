@@ -6,20 +6,19 @@
 
 
 void initHand(Hand *hand) {
-    hand->capacity = 5; // Initial capacity
+    hand->cards = (Card *)malloc(5 * sizeof(Card)); // Initial size is 5 for now. what should it be?
+    if (hand->cards == NULL) {
+        fprintf(stderr, "Error: Memory allocation for hand failed.\n");
+        exit(1);
+    }
     hand->numCards = 0;
-    hand->cards = (Card *)malloc(hand->capacity * sizeof(Card));
+    hand->capacity = 5; // Initial capacity
 
     // init Booleans
     hand->softOrHard = 0;
     hand->doubleable = 0;
     hand->splittable = 0;
     hand->surrenderable = 0;
-
-    if (hand->cards == NULL) {
-        fprintf(stderr, "Error: Memory allocation for hand failed.\n");
-        exit(1);
-    }
 }
 
 int hasSoftAce(const Hand *hand) {

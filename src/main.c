@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "deck.h"
 #include "player.h"
 #include "strategy.h"
@@ -47,7 +48,7 @@ int main(int argc, char *argv[]) {
     // Allocate memory for the strategy sheet 
     // 40 rows (soft, hard, splits, surrenders AND 10 columns [2-A]
     char strategy[STRAT_ROWS][STRAT_COLS];
- 
+    memset(strategy, 0, sizeof(strategy));
     readStrategySheet(strategy_file, strategy);
 
     // Initialize some variables
@@ -107,8 +108,6 @@ int main(int argc, char *argv[]) {
             {
                 // BOTH PLAYERS HAVE NATURALS. PUSH
                 if (getHandValue(&dealer.hand) == 21 && getHandValue(&player.hand) == 21) {
-                    freeHand(&dealer.hand);
-                    freeHand(&player.hand);
                     fprintf(out, "adding %d to total_wagered\n", wager);
                     total_wagered += wager;
                     fprintf(out, "adding %d to total_won\n", wager);
@@ -120,8 +119,6 @@ int main(int argc, char *argv[]) {
                     bankroll -= wager;
                     fprintf(out, "adding %d to total_wagered\n", wager);
                     total_wagered += wager;
-                    freeHand(&dealer.hand);
-                    freeHand(&player.hand);
                     continue;
                 }
                 // Player natural - PLAYER WINS
@@ -131,8 +128,6 @@ int main(int argc, char *argv[]) {
                     fprintf(out, "adding %f to total_won\n", wager * BJ_PAY);
                     total_wagered += wager;
                     fprintf(out, "adding %f to total_wagered\n", wager * BJ_PAY);
-                    freeHand(&dealer.hand);
-                    freeHand(&player.hand);
                     continue;
                 }
             }
@@ -140,7 +135,7 @@ int main(int argc, char *argv[]) {
             // While loop to allow the player to act multiple times
             while (1) {
                 // THIS IS WHERE THE STRATEGY IMPLEMENTATION GOES
-                // Function determinAction() comes from  strategy.c 
+                // Function determinAction() comes from  strategy.c
                 char action = determineAction(&player.hand, dealerUpcard, strategy);
 
                 // Player hits - add 1 card and check for bust
@@ -269,8 +264,6 @@ int main(int argc, char *argv[]) {
             // Check for bust again after player's turn, return to start of the loop if bust
             // Also check if the player has surrendered and the hand may be canceled
             if (isBust(&player.hand) || surrender_bool == 1) {
-                freeHand(&dealer.hand);
-                freeHand(&player.hand);
                 continue;
             }
 

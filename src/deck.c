@@ -4,9 +4,9 @@
 
 // "Deck" & "Shoe" are interchangeable in this program
 void initDeck(Deck *deck, int numDecks) {
-    deck->capacity = 52 * numDecks;
+    deck->cards = (Card *)malloc(52 * numDecks * sizeof(Card));
     deck->numCards = deck->capacity;
-    deck->cards = (Card *)malloc(deck->capacity * sizeof(Card));
+    deck->capacity = 52 * numDecks;
     deck->top = 0;
     
     if (deck->cards == NULL) {
