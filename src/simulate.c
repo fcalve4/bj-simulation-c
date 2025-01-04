@@ -5,8 +5,10 @@
 #include "strategy.h"
 #include "simulate.h"
 
+#define STRAT_COLS 10
 
-void play_shoe(Player *player, Player *dealer, char **strategy, int num_decks, int penetration, int h17, int ls, int enhc)
+
+void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int num_decks, int penetration, int h17, int ls, int enhc)
 {
     Deck deck;
     initDeck(&deck, num_decks);
@@ -176,7 +178,7 @@ int check_for_naturals(Hand *playerhand, Hand *dealerhand)
     }
 }
 
-void simulate(int num_simulations, char* strategy)
+void simulate(int num_simulations, char (*strategy)[STRAT_COLS])
 {
     Player player;
     Player dealer;
