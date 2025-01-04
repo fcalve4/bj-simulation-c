@@ -52,6 +52,7 @@ int main(int argc, char *argv[]) {
     memset(strategy, 0, sizeof(strategy));
     readStrategySheet(strategy_file, strategy);
 
+    // Call the simulate function to run the main game loop
     simulate(NUM_SIMULATIONS, strategy, NUM_DECKS, PEN, H17, LS, ENHC);
 
 
