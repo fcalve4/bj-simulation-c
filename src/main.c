@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     memset(strategy, 0, sizeof(strategy));
     readStrategySheet(strategy_file, strategy);
 
-    simulate(NUM_SIMULATIONS, &strategy);
+    simulate(NUM_SIMULATIONS, strategy, NUM_DECKS, PEN, H17, LS, ENHC);
 
 
     // Stop the clock, calculate the elapsed time, print the result to terminal

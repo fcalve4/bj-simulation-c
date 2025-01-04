@@ -8,13 +8,13 @@
 #define STRAT_COLS 10
 
 
-void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int num_decks, int penetration, int h17, int ls, int enhc)
+void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int num_decks, int pen, int h17, int ls, int enhc)
 {
     Deck deck;
     initDeck(&deck, num_decks);
     shuffleDeck(&deck);
 
-    while (deck.top <= deck.capacity * penetration)
+    while (deck.top <= deck.capacity * pen)
     {   
         // Init hands
         initHand(&player->hand);
@@ -178,12 +178,12 @@ int check_for_naturals(Hand *playerhand, Hand *dealerhand)
     }
 }
 
-void simulate(int num_simulations, char (*strategy)[STRAT_COLS])
+void simulate(int num_simulations, char (*strategy)[STRAT_COLS], int num_decks, int pen, int h17, int ls, int enhc)
 {
     Player player;
     Player dealer;
     for (int i=0; i < num_simulations; i++)
     {   
-        play_shoe(&player, &dealer, strategy, 6, 0.75, 1, 1, 0);
+        play_shoe(&player, &dealer, strategy, num_decks, pen, h17, ls, enhc);
     }
 }
