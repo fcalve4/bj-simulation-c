@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 void init_player(Player *player) {
-    initHand(&player->hand);
+    init_hand(&player->hand);
     player->bankroll = 0;
 }
 
