@@ -55,7 +55,6 @@ int main(int argc, char *argv[]) {
     // Call the simulate function to run the main game loop
     simulate(NUM_SIMULATIONS, strategy, NUM_DECKS, PEN, H17, LS, ENHC);
 
-
     // Stop the clock, calculate the elapsed time, print the result to terminal
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
