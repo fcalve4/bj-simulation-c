@@ -5,26 +5,26 @@
 
 typedef struct {
     Card *cards;  // Dynamically allocated array for cards
-    int numCards; // Number of cards in the hand
+    int num_cards; // Number of cards in the hand
     int capacity; // Capacity of the hand
 
     // Booleans
-    int softOrHard;
+    int soft_or_hard;
     int doubleable;
     int splittable;
     int surrenderable;
 } Hand;
 
 // Hand functions
-void initHand(Hand *hand);
-void addCardToHand(Hand *hand, Card card);
-int getHandValue(const Hand *hand);
-int isBust(const Hand *hand);
-void freeHand(Hand *hand);
+void init_hand(Hand *hand);
+void add_card_to_hand(Hand *hand, Card card);
+int get_hand_value(const Hand *hand);
+int is_bust(const Hand *hand);
+void free_hand(Hand *hand);
 
-int hasSoftAce(const Hand *hand);
-int canDouble(const Hand *hand);
-int canSplit(const Hand *hand);
-int canSurrender(const Hand *hand);
+int has_soft_ace(const Hand *hand);
+int can_double(const Hand *hand);
+int can_split(const Hand *hand);
+int can_surrender(const Hand *hand);
 
 #endif

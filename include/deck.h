@@ -5,15 +5,15 @@
 
 typedef struct {
     Card *cards; // Dynamically allocated array of cards
-    int numCards; // Current number of cards
+    int num_cards; // Current number of cards
     int capacity; // Maximum capacity of the array
     int top;
 } Deck;
 
 // Deck functions
-void initDeck(Deck *deck, int numDecks);
-void shuffleDeck(Deck *deck);
-Card dealCard(Deck *deck);
-void freeDeck(Deck *deck);
+void init_deck(Deck *deck, int numDecks);
+void shuffle_deck(Deck *deck);
+Card deal_card(Deck *deck);
+void free_deck(Deck *deck);
 
 #endif

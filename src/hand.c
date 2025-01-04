@@ -5,26 +5,26 @@
 #include "card.h"
 
 
-void initHand(Hand *hand) {
-    hand->cards = (Card *)malloc(5 * sizeof(Card)); // Initial size is 5 for now. what should it be?
+void init_hand(Hand *hand) {
+    hand->cards = (Card *)malloc(5 * sizeof(Card)); // Initial size is 5 for what should it be?
     if (hand->cards == NULL) {
         fprintf(stderr, "Error: Memory allocation for hand failed.\n");
         exit(1);
     }
-    hand->numCards = 0;
+    hand->num_cards = 0;
     hand->capacity = 5; // Initial capacity
 
     // init Booleans
-    hand->softOrHard = 0;
+    hand->soft_or_hard = 0;
     hand->doubleable = 0;
     hand->splittable = 0;
     hand->surrenderable = 0;
 }
 
-int hasSoftAce(const Hand *hand) {
+int has_soft_ace(const Hand *hand) {
     int value = 0;
     int aceCount = 0;
-    for (int i = 0; i < hand->numCards; i++) {
+    for (int i = 0; i < hand->num_cards; i++) {
         if (hand->cards[i].rank == 1) {
             aceCount++;
             value += 11;
@@ -35,19 +35,19 @@ int hasSoftAce(const Hand *hand) {
     return aceCount > 0 && value <= 21;
 }
 
-int canDouble(const Hand *hand) {
-    return hand->numCards == 2;
+int can_double(const Hand *hand) {
+    return hand->num_cards == 2;
 }
 
-int canSplit(const Hand *hand) {
-    return hand->numCards == 2 && hand->cards[0].rank == hand->cards[1].rank;
+int can_split(const Hand *hand) {
+    return hand->num_cards == 2 && hand->cards[0].rank == hand->cards[1].rank;
 }
-int canSurrender(const Hand *hand) {
-    return hand->numCards == 2;
+int can_surrender(const Hand *hand) {
+    return hand->num_cards == 2;
 }
 
 
-void addCardToHand(Hand *hand, Card card) {
+void add_card_to_hand(Hand *hand, Card card) {
     // Sanity check for the Hand pointer
     if (hand == NULL) {
         fprintf(stderr, "Error: Hand pointer is NULL.\n");
@@ -61,7 +61,7 @@ void addCardToHand(Hand *hand, Card card) {
     }
 
     // Check if resizing is necessary
-    if (hand->numCards >= hand->capacity) {
+    if (hand->num_cards >= hand->capacity) {
         hand->capacity *= 2; // Double the capacity
         Card *newCards = realloc(hand->cards, hand->capacity * sizeof(Card));
 
@@ -76,48 +76,48 @@ void addCardToHand(Hand *hand, Card card) {
     }
 
     // Add the card to the hand
-    hand->cards[hand->numCards++] = card;
+    hand->cards[hand->num_cards++] = card;
 
     // Update the hand's attributes
-    hand->softOrHard = hasSoftAce(hand);
-    hand->doubleable = canDouble(hand);
-    hand->splittable = canSplit(hand);
-    hand->surrenderable = canSurrender(hand);
+    hand->soft_or_hard = has_soft_ace(hand);
+    hand->doubleable = can_double(hand);
+    hand->splittable = can_split(hand);
+    hand->surrenderable = can_surrender(hand);
 }
 
 
-void freeHand(Hand *hand) {
+void free_hand(Hand *hand) {
     // Free the dynamically allocated memory and avoid dangling pointer
     free(hand->cards); 
     hand->cards = NULL;
-    hand->numCards = 0;
+    hand->num_cards = 0;
 }
 
-int getHandValue(const Hand *hand) {
+int get_hand_value(const Hand *hand) {
     int value = 0;
-    int aceCount = 0;
+    int ace_count = 0;
 
-    for (int i = 0; i < hand->numCards; i++) {
+    for (int i = 0; i < hand->num_cards; i++) {
         int rank = hand->cards[i].rank;
         if (rank > 10) {
             value += 10; // Face cards are worth 10
         } else if (rank == 1) {
             value += 1;  // Aces initially count as 1
-            aceCount++;
+            ace_count++;
         } else {
             value += rank;
         }
     }
 
     // Convert Aces from 1 to 11 if it doesn't cause a bust
-    while (aceCount > 0 && value + 10 <= 21) {
+    while (ace_count > 0 && value + 10 <= 21) {
         value += 10;
-        aceCount--;
+        ace_count--;
     }
 
     return value;
 }
 
-int isBust(const Hand *hand) {
-    return getHandValue(hand) > 21;
+int is_bust(const Hand *hand) {
+    return get_hand_value(hand) > 21;
 }

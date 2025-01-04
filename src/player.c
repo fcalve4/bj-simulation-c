@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void initPlayer(Player *player) {
+void init_player(Player *player) {
     initHand(&player->hand);
     player->bankroll = 0;
 }

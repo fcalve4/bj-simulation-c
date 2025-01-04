@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
     // 40 rows (soft, hard, splits, surrenders AND 10 columns [2-A]
     char strategy[STRAT_ROWS][STRAT_COLS];
     memset(strategy, 0, sizeof(strategy));
-    readStrategySheet(strategy_file, strategy);
+    read_strategy_sheet(strategy_file, strategy);
 
     // Call the simulate function to run the main game loop
     simulate(NUM_SIMULATIONS, strategy, NUM_DECKS, PEN, H17, LS, ENHC);

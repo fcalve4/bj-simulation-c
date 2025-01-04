@@ -11,25 +11,25 @@
 void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int num_decks, int pen, int h17, int ls, int enhc)
 {
     Deck deck;
-    initDeck(&deck, num_decks);
-    shuffleDeck(&deck);
+    init_deck(&deck, num_decks);
+    shuffle_deck(&deck);
 
     while (deck.top <= deck.capacity * pen)
     {   
         // Init hands
-        initHand(&player->hand);
-        initHand(&dealer->hand);
+        init_hand(&player->hand);
+        init_hand(&dealer->hand);
         
         // Deal initial cards to hands
-        addCardToHand(&player->hand, dealCard(&deck));
-        addCardToHand(&player->hand, dealCard(&deck));
+        add_card_to_hand(&player->hand, deal_card(&deck));
+        add_card_to_hand(&player->hand, deal_card(&deck));
 
-        addCardToHand(&dealer->hand, dealCard(&deck));
+        add_card_to_hand(&dealer->hand, deal_card(&deck));
         // Grab the dealer upcard value now and store it separately (this is to check for naturals)
-        int dealerUpcard = getHandValue(&dealer->hand);
+        int dealer_upcard = get_hand_value(&dealer->hand);
 
         // Deal the dealer another hand
-        addCardToHand(&dealer->hand, dealCard(&deck));
+        add_card_to_hand(&dealer->hand, deal_card(&deck));
 
         // If enhc is false (usually it is), check for naturals immediately
         if (enhc == 0)
@@ -40,11 +40,11 @@ void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int
         // -=-=-PLAYER TURN TO ACT-=-=-
         while (1) {
             // Determine player action based on strategy sheet
-            char action = determineAction(&player->hand, dealerUpcard, strategy);
+            char action = determine_action(&player->hand, dealer_upcard, strategy);
             // Player hit - add 1 card and check for bust
             if (action == 'H') {
-                addCardToHand(&player->hand, dealCard(&deck));
-                if (isBust(&player->hand)) {
+                add_card_to_hand(&player->hand, deal_card(&deck));
+                if (is_bust(&player->hand)) {
                     printf("Player busts!\n");
                     break;
                 }
@@ -58,30 +58,30 @@ void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int
             // Reinits the hand and plays it with 1 card from the initial deal
             else if (action == 'P') {
                 Card card = player->hand.cards[0];
-                initHand(&player->hand);
-                addCardToHand(&player->hand, card);
+                init_hand(&player->hand);
+                add_card_to_hand(&player->hand, card);
                 continue;
             }
             // Player Double otherwise hit
             else if (action == 'D') {
-                if (canDouble(&player->hand))
+                if (can_double(&player->hand))
                 {
                     // Double the wager
                 }
-                addCardToHand(&player->hand, dealCard(&deck));
-                if (isBust(&player->hand)) { // Is this statement necesarry? will the player ever bust when action is 'D'?
+                add_card_to_hand(&player->hand, deal_card(&deck));
+                if (is_bust(&player->hand)) { // Is this statement necesarry? will the player ever bust when action is 'D'?
                     printf("Player busts!\n");
                     break;
                 }
             }
             // Player Double otherwise stand
             else if (action == 'T') {
-                if (canDouble(&player->hand))
+                if (can_double(&player->hand))
                 {
                     // Double the wager
-                    addCardToHand(&player->hand, dealCard(&deck));
+                    add_card_to_hand(&player->hand, deal_card(&deck));
                 }
-                if (isBust(&player->hand)) {
+                if (is_bust(&player->hand)) {
                     printf("Player busts!\n");
                     break;
                 }
@@ -89,7 +89,7 @@ void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int
             }
             // Player Surrender otherwise stand
             else if (action == 'X') {
-                if (canSurrender(&player->hand) && ls == 1)
+                if (can_surrender(&player->hand) && ls == 1)
                 {
                     break;
                 }
@@ -97,21 +97,21 @@ void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int
             }
             // Player Surrender otherwise hit
             else if (action == 'Y') {
-                if (canSurrender(&player->hand) && ls == 1)
+                if (can_surrender(&player->hand) && ls == 1)
                 {
                     break;
                 }
                 // Else hit
-                addCardToHand(&player->hand, dealCard(&deck));
+                add_card_to_hand(&player->hand, deal_card(&deck));
 
-                if (isBust(&player->hand)) {
+                if (is_bust(&player->hand)) {
                     printf("Player busts!\n");
                     break;
                 }
             }
             // Player Surrender otherwise split
             else if (action == 'Z') {
-                if (canSurrender(&player->hand) && ls == 1)
+                if (can_surrender(&player->hand) && ls == 1)
                 {
                     break;
                 }
@@ -128,23 +128,23 @@ void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int
         // case 1: H17, dealer hits on soft 17s
         if (h17 == 1)
         {
-            while (getHandValue(&dealer->hand) < 17 || ((hasSoftAce(&dealer->hand) == 1) && getHandValue(&dealer->hand) == 17)) {
-            addCardToHand(&dealer->hand, dealCard(&deck));
+            while (get_hand_value(&dealer->hand) < 17 || ((hasSoftAce(&dealer->hand) == 1) && get_hand_value(&dealer->hand) == 17)) {
+            add_card_to_hand(&dealer->hand, deal_card(&deck));
             }
         }
         // case 2: S17, dealer stands on all 17s
         else
         {
-            while (getHandValue(&dealer->hand) < 17) {
-            addCardToHand(&dealer->hand, dealCard(&deck));
+            while (get_hand_value(&dealer->hand) < 17) {
+            add_card_to_hand(&dealer->hand, deal_card(&deck));
             }
         }
 
         // Determine winner, Player wins if dealer busts or has a higher hand
-        if (isBust(&dealer->hand) || getHandValue(&player->hand) > getHandValue(&dealer->hand)) {
+        if (is_bust(&dealer->hand) || get_hand_value(&player->hand) > get_hand_value(&dealer->hand)) {
             printf("Player wins!\n");
         }
-        else if (getHandValue(&player->hand) < getHandValue(&dealer->hand)) {
+        else if (get_hand_value(&player->hand) < get_hand_value(&dealer->hand)) {
             printf("Dealer wins!\n");
         }
         else {
@@ -161,15 +161,15 @@ void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int
 int check_for_naturals(Hand *playerhand, Hand *dealerhand)
 {
     // If both players have blackjack
-    if (getHandValue(playerhand) == 21 && getHandValue(dealerhand) == 21) {
+    if (get_hand_value(playerhand) == 21 && get_hand_value(dealerhand) == 21) {
         return 0;
     }
     // If player has blackjack
-    else if (getHandValue(playerhand) == 21) {
+    else if (get_hand_value(playerhand) == 21) {
         return 0;
     }
     // If dealer has blackjack
-    else if (getHandValue(dealerhand) == 21) {
+    else if (get_hand_value(dealerhand) == 21) {
         return 0;
     }
     // If neither player has blackjack

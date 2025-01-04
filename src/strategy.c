@@ -5,7 +5,7 @@
 #define STRAT_ROWS 37 // Number of player hand conditions
 #define STRAT_COLS 10 // Dealer's upcards (2 to Ace)
 
-void readStrategySheet(FILE *file, char (*strategyArray)[STRAT_COLS])
+void read_strategy_sheet(FILE *file, char (*strategy_array)[STRAT_COLS])
 {
     char line[256];
     int row = 0;
@@ -15,7 +15,7 @@ void readStrategySheet(FILE *file, char (*strategyArray)[STRAT_COLS])
         char *token = strtok(line, ",");
         int col = 0;
         while (token != NULL && col < STRAT_COLS) {
-            strategyArray[row][col] = token[0]; // Store the first character of the token
+            strategy_array[row][col] = token[0]; // Store the first character of the token
             token = strtok(NULL, ",");
             col++;
         }
@@ -24,32 +24,32 @@ void readStrategySheet(FILE *file, char (*strategyArray)[STRAT_COLS])
     fclose(file);
 }
 
-char determineAction(const Hand *playerHand, int dealerUpcard, char (*strategyArray)[STRAT_COLS])
+char determine_action(const Hand *player_hand, int dealer_upcard, char (*strategy_array)[STRAT_COLS])
 {
-    int playerTotal = getHandValue(playerHand);
-    int rowIndex;
+    int player_total = get_hand_value(player_hand);
+    int row_index;
 
-    if (canSplit(playerHand))
+    if (can_split(player_hand))
     {
-        int value = playerHand->cards[0].rank; // Store the card that we have two of
+        int value = player_hand->cards[0].rank; // Store the card that we have two of
         // For splitable hands, decisions start at row #28 and index 27 (zero index for array)
         // The row index will stay at 27 for a deuce, and increase by one for every value we increase, so we subtract 2 and add the value of the single card
-        rowIndex = 27 + value - 2;
+        row_index = 27 + value - 2;
 
-        return strategyArray[rowIndex][dealerUpcard - 2];
+        return strategy_array[row_index][dealer_upcard - 2];
     }
-    else if (hasSoftAce(playerHand))
+    else if (has_soft_ace(player_hand))
     {
          // For soft hands, decisions start at row #19 and index 18 (zero index for array)
          // Totals start at soft 13 so we subtract 13
-        rowIndex = 18 + playerTotal - 13;
-        return strategyArray[rowIndex][dealerUpcard - 2];
+        row_index = 18 + player_total - 13;
+        return strategy_array[row_index][dealer_upcard - 2];
     }
     else
     {
         // Player totals start at 4 (index 0) and end at 21 (index 17), so if total is 4, the index is 0, so we subtract 4
-        rowIndex = playerTotal - 4;
-        return strategyArray[rowIndex][dealerUpcard - 2];
+        row_index = player_total - 4;
+        return strategy_array[row_index][dealer_upcard - 2];
 
     }
     

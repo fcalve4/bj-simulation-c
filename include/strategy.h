@@ -8,7 +8,7 @@
 #include "hand.h"
 
 // Strategy functions
-char determineAction(const Hand *playerHand, int dealerUpcard, char (*strategyArray)[STRAT_COLS]);
-void readStrategySheet(FILE *file, char (*strategyArray)[STRAT_COLS]);
+char determine_action(const Hand *player_hand, int dealer_upcard, char (*strategy_array)[STRAT_COLS]);
+void read_strategy_sheet(FILE *file, char (*strategy_array)[STRAT_COLS]);
 
 #endif

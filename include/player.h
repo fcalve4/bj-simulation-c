@@ -9,6 +9,6 @@ typedef struct {
 } Player;
 
 // Player functions
-void initPlayer(Player *player);
+void init_player(Player *player);
 
 #endif
