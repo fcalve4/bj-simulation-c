@@ -1,6 +1,7 @@
-#include "deck.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "deck.h"
 
 // "Deck" & "Shoe" are interchangeable in this program
 void init_deck(Deck *deck, int num_decks) {
@@ -52,7 +53,10 @@ void shuffle_deck(Deck *deck) {
 Card deal_card(Deck *deck) {
     if (deck->cards == NULL || deck->top >= deck->capacity) {
         fprintf(stderr, "Error: No more cards in the deck.\n");
+        
         exit(1);
     }
-    return deck->cards[deck->top++];
+    deck->top++;
+    Card card = deck->cards[deck->top];
+    return card;
 }

@@ -1,8 +1,8 @@
-#include "hand.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "card.h"
+#include "hand.h"
 
 
 void init_hand(Hand *hand) {

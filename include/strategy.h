@@ -1,10 +1,10 @@
-#include <stdio.h>
+
 #ifndef STRATEGY_H
 #define STRATEGY_H
 
-
 #define STRAT_COLS 10 // Dealer's upcards (2 to Ace)
 
+#include <stdio.h>
 #include "hand.h"
 
 // Strategy functions

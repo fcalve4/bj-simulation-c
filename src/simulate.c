@@ -15,8 +15,12 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
     init_deck(&deck, metadata->num_decks);
     shuffle_deck(&deck);
 
-    // Play the shoe one hand at a time
-    while (deck.top <= deck.capacity * metadata->pen) {   
+    // Play hands until cut card is reached
+    while (deck.top <= deck.capacity * metadata->pen) {
+        // Increment hand counter
+        metadata->total_hands_played++;
+        fprintf(out, "Total Hands Played: %d\n", metadata->total_hands_played);
+
         // Init hands
         init_hand(player_hand);
         init_hand(dealer_hand);
@@ -37,7 +41,7 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
 
         // If enhc is false (usually it is), check for naturals immediately
         if (metadata->enhc == 0) {
-            check_for_naturals(out, player_hand, dealer_hand);
+            check_for_naturals(out, player_hand, dealer_hand, metadata);
         }
 
         // -=-=-PLAYER TURN TO ACT-=-=-
@@ -51,20 +55,15 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
 
         // If enhc is true (rarely is), check for naturals after player acts
         if (metadata->enhc == 1) {
-            check_for_naturals(out, player_hand, dealer_hand);
+            check_for_naturals(out, player_hand, dealer_hand, metadata);
         }
 
         // -=-=-DEALER TURN TO ACT-=-=-
         play_dealer_turn(out, dealer_hand, &deck, metadata->h17);
 
         // Determine the winner
-        determine_winner(out, player_hand, dealer_hand);
-
-        free_hand(player_hand);
-        free_hand(dealer_hand);
+        determine_winner(out, player_hand, dealer_hand, metadata);
     }
-    free_deck(&deck);
-
 }
 
 
@@ -95,28 +94,22 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
         // Grab the split card
         Card split_card = player_hand->cards[0];
         fprintf(out, "-------PLAYER SPLITTING!------[%d]----\n", split_card.rank);
-
         // Create a new loop for the split off hand.
         int split_loop_bool = 1;
         // Reinitialize the player's hand and add the split card + additional card
         init_hand(player_hand);
         add_card_to_hand(player_hand, split_card);
         add_card_to_hand(player_hand, deal_card(deck));
-        fprintf(out, "-Beginning first split off hand logic\n");
         while (split_loop_bool) {
             // Call the player turn function for the split off hand and play normally
             // This should just play another hand and then once this loop breaks, the next hand will play via the main loop
             fprintf(out, "--Player hand total: %d\n", get_hand_value(player_hand));
             split_loop_bool = play_player_turn(out, player_hand, dealer_hand, deck, strategy, dealer_upcard, metadata);
         }
-        fprintf(out, "-Finished first split off hand logic\n");
         // Play dealer turn
-        fprintf(out, "-Beginning dealer logic for 1st hand\n");
         play_dealer_turn(out, player_hand, deck, metadata->h17);
-        fprintf(out, "-Finished dealer logic for 1st hand\n");
         // Determine winner of the hand
-        fprintf(out, "determining winner of first hand\n");
-        determine_winner(out, player_hand, dealer_hand);
+        determine_winner(out, player_hand, dealer_hand, metadata);
         
         
         // Reinitialize the player's hand and add the split card
@@ -124,7 +117,6 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
         add_card_to_hand(player_hand, split_card);
         add_card_to_hand(player_hand, deal_card(deck));
         // Return to start of loop to continue playing the hand
-        fprintf(out, "reiniting hands and starting second hand\n");
     }
 
 
@@ -207,13 +199,15 @@ void play_dealer_turn(FILE *out, Hand *dealer_hand, Deck *deck, int h17)
     }
 }
 
-void determine_winner(FILE *out, Hand *player_hand, Hand *dealer_hand) {
+void determine_winner(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata *metadata) {
     // Determine winner, Player wins if dealer busts or has a higher hand
     if (is_bust(player_hand) || get_hand_value(player_hand) > get_hand_value(dealer_hand)) {
         fprintf(out, "---Player wins!\n");
+        metadata->bankroll += metadata->wager;
     }
     else if (get_hand_value(player_hand) < get_hand_value(dealer_hand)) {
         fprintf(out, "---Dealer wins!\n");
+        metadata->bankroll -= metadata->wager;
     }
     else {
         fprintf(out, "---It's a push!\n");
@@ -221,7 +215,7 @@ void determine_winner(FILE *out, Hand *player_hand, Hand *dealer_hand) {
 }
 
 
-void check_for_naturals(FILE *out, Hand *playerhand, Hand *dealerhand) {
+void check_for_naturals(FILE *out, Hand *playerhand, Hand *dealerhand, Metadata *metadata) {
     // If both players have blackjack
     if (get_hand_value(playerhand) == 21 && get_hand_value(dealerhand) == 21) {
         fprintf(out, "---NATURAL PUSH\n");
@@ -230,14 +224,16 @@ void check_for_naturals(FILE *out, Hand *playerhand, Hand *dealerhand) {
     // If player has blackjack
     else if (get_hand_value(playerhand) == 21) {
         fprintf(out, "---PLAYER BLACKJACK\n");
+        metadata->bankroll += metadata->wager * metadata->bj_pay;
         return;
     }
     // If dealer has blackjack
     else if (get_hand_value(dealerhand) == 21) {
         fprintf(out, "---DEALER BLACKJACK\n");
+        metadata->bankroll -= metadata->wager;
         return;
     }
-    // If neither player has blackjack
+    // If neither player has blackjack nothing happens
     return;
 }
 
@@ -246,6 +242,7 @@ void simulate(FILE *out, int num_simulations, char (*strategy)[STRAT_COLS], Meta
     Hand dealer_hand;
     for (int i=0; i < num_simulations; i++)
     {   
+        metadata->total_shoes_played++;
         play_shoe(out, &player_hand, &dealer_hand, strategy, metadata);
     }
 }

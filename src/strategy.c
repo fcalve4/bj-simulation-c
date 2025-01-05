@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+
 #include "strategy.h"
 
 #define STRAT_ROWS 37 // Number of player hand conditions
