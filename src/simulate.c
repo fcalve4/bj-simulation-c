@@ -1,7 +1,7 @@
 #include <stdio.h>
+
 #include "hand.h"
 #include "deck.h"
-#include "player.h"
 #include "strategy.h"
 #include "simulate.h"
 #include "metadata.h"
@@ -9,7 +9,7 @@
 #define STRAT_COLS 10
 
 
-void play_shoe(FILE *out, Player *player, Player *dealer, char (*strategy)[STRAT_COLS], Metadata *metadata) {
+void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)[STRAT_COLS], Metadata *metadata) {
     // Init and shuffle the deck
     Deck deck;
     init_deck(&deck, metadata->num_decks);
@@ -18,26 +18,26 @@ void play_shoe(FILE *out, Player *player, Player *dealer, char (*strategy)[STRAT
     // Play the shoe one hand at a time
     while (deck.top <= deck.capacity * metadata->pen) {   
         // Init hands
-        init_hand(&player->hand);
-        init_hand(&dealer->hand);
+        init_hand(player_hand);
+        init_hand(dealer_hand);
         
         // Deal initial cards to player
-        add_card_to_hand(&player->hand, deal_card(&deck));
-        add_card_to_hand(&player->hand, deal_card(&deck));
+        add_card_to_hand(player_hand, deal_card(&deck));
+        add_card_to_hand(player_hand, deal_card(&deck));
         
 
         // Deal initial cards to dealer
-        add_card_to_hand(&dealer->hand, deal_card(&deck));
+        add_card_to_hand(dealer_hand, deal_card(&deck));
         // Grab the dealer upcard value now and store it separately (this is to check for naturals)
-        int dealer_upcard = get_hand_value(&dealer->hand);
+        int dealer_upcard = get_hand_value(dealer_hand);
         fprintf(out, "--Dealer upcard: %d\n", dealer_upcard);
 
         // Deal the dealer another hand
-        add_card_to_hand(&dealer->hand, deal_card(&deck));
+        add_card_to_hand(dealer_hand, deal_card(&deck));
 
         // If enhc is false (usually it is), check for naturals immediately
         if (metadata->enhc == 0) {
-            check_for_naturals(out, &player->hand, &dealer->hand);
+            check_for_naturals(out, player_hand, dealer_hand);
         }
 
         // -=-=-PLAYER TURN TO ACT-=-=-
@@ -45,23 +45,23 @@ void play_shoe(FILE *out, Player *player, Player *dealer, char (*strategy)[STRAT
 
         // While the player is still acting, call the player turn function
         while (player_turn_loop_bool) {
-            fprintf(out, "--Player hand total: %d\n", get_hand_value(&player->hand));
-            player_turn_loop_bool = play_player_turn(out, player, dealer, &deck, strategy, dealer_upcard, metadata);
+            fprintf(out, "--Player hand total: %d\n", get_hand_value(player_hand));
+            player_turn_loop_bool = play_player_turn(out, player_hand, dealer_hand, &deck, strategy, dealer_upcard, metadata);
         }
 
         // If enhc is true (rarely is), check for naturals after player acts
         if (metadata->enhc == 1) {
-            check_for_naturals(out, &player->hand, &dealer->hand);
+            check_for_naturals(out, player_hand, dealer_hand);
         }
 
         // -=-=-DEALER TURN TO ACT-=-=-
-        play_dealer_turn(out, &dealer->hand, &deck, metadata->h17);
+        play_dealer_turn(out, dealer_hand, &deck, metadata->h17);
 
         // Determine the winner
-        determine_winner(out, &player->hand, &dealer->hand);
+        determine_winner(out, player_hand, dealer_hand);
 
-        free_hand(&player->hand);
-        free_hand(&dealer->hand);
+        free_hand(player_hand);
+        free_hand(dealer_hand);
     }
     free_deck(&deck);
 
@@ -74,14 +74,14 @@ void play_shoe(FILE *out, Player *player, Player *dealer, char (*strategy)[STRAT
 // Player "make decision" function
 // This function will determine the player's action based on the strategy sheet
     // and returns 0 or 1 depending on if loop continues or breaks.
-int play_player_turn(FILE *out, Player *player, Player *dealer, Deck *deck, char (*strategy)[STRAT_COLS], int dealer_upcard, Metadata *metadata) {
+int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck, char (*strategy)[STRAT_COLS], int dealer_upcard, Metadata *metadata) {
     // Determine player action based on strategy sheet
-    char action = determine_action(&player->hand, dealer_upcard, strategy);
+    char action = determine_action(player_hand, dealer_upcard, strategy);
     fprintf(out, "PLAYER ACTION: %c\n", action);
     // Player hit - add 1 card and check for bust
     if (action == 'H') {
-        add_card_to_hand(&player->hand, deal_card(deck));
-        if (is_bust(&player->hand)) {
+        add_card_to_hand(player_hand, deal_card(deck));
+        if (is_bust(player_hand)) {
             fprintf(out, "Player busts!\n");
             return 0;
         }
@@ -93,36 +93,36 @@ int play_player_turn(FILE *out, Player *player, Player *dealer, Deck *deck, char
     // Player split
     else if (action == 'P') {
         // Grab the split card
-        Card split_card = player->hand.cards[0];
+        Card split_card = player_hand->cards[0];
         fprintf(out, "-------PLAYER SPLITTING!------[%d]----\n", split_card.rank);
-        
+
         // Create a new loop for the split off hand.
         int split_loop_bool = 1;
         // Reinitialize the player's hand and add the split card + additional card
-        init_hand(&player->hand);
-        add_card_to_hand(&player->hand, split_card);
-        add_card_to_hand(&player->hand, deal_card(deck));
+        init_hand(player_hand);
+        add_card_to_hand(player_hand, split_card);
+        add_card_to_hand(player_hand, deal_card(deck));
         fprintf(out, "-Beginning first split off hand logic\n");
         while (split_loop_bool) {
             // Call the player turn function for the split off hand and play normally
             // This should just play another hand and then once this loop breaks, the next hand will play via the main loop
-            fprintf(out, "--Player hand total: %d\n", get_hand_value(&player->hand));
-            split_loop_bool = play_player_turn(out, player, dealer, deck, strategy, dealer_upcard, metadata);
+            fprintf(out, "--Player hand total: %d\n", get_hand_value(player_hand));
+            split_loop_bool = play_player_turn(out, player_hand, dealer_hand, deck, strategy, dealer_upcard, metadata);
         }
         fprintf(out, "-Finished first split off hand logic\n");
         // Play dealer turn
         fprintf(out, "-Beginning dealer logic for 1st hand\n");
-        play_dealer_turn(out, &player->hand, deck, metadata->h17);
+        play_dealer_turn(out, player_hand, deck, metadata->h17);
         fprintf(out, "-Finished dealer logic for 1st hand\n");
         // Determine winner of the hand
         fprintf(out, "determining winner of first hand\n");
-        determine_winner(out, &player->hand, &dealer->hand);
+        determine_winner(out, player_hand, dealer_hand);
         
         
         // Reinitialize the player's hand and add the split card
-        init_hand(&player->hand);
-        add_card_to_hand(&player->hand, split_card);
-        add_card_to_hand(&player->hand, deal_card(deck));
+        init_hand(player_hand);
+        add_card_to_hand(player_hand, split_card);
+        add_card_to_hand(player_hand, deal_card(deck));
         // Return to start of loop to continue playing the hand
         fprintf(out, "reiniting hands and starting second hand\n");
     }
@@ -130,24 +130,24 @@ int play_player_turn(FILE *out, Player *player, Player *dealer, Deck *deck, char
 
     // Player Double otherwise hit
     else if (action == 'D') {
-        if (can_double(&player->hand))
+        if (can_double(player_hand))
         {
             // Double the wager
         }
-        add_card_to_hand(&player->hand, deal_card(deck));
-        if (is_bust(&player->hand)) { // Is this statement necesarry? will the player ever bust when action is 'D'?
+        add_card_to_hand(player_hand, deal_card(deck));
+        if (is_bust(player_hand)) { // Is this statement necesarry? will the player ever bust when action is 'D'?
             fprintf(out, "Player busts!\n");
             return 0;
         }
     }
     // Player Double otherwise stand
     else if (action == 'T') {
-        if (can_double(&player->hand))
+        if (can_double(player_hand))
         {
             // Double the wager
-            add_card_to_hand(&player->hand, deal_card(deck));
+            add_card_to_hand(player_hand, deal_card(deck));
         }
-        if (is_bust(&player->hand)) {
+        if (is_bust(player_hand)) {
             fprintf(out, "Player busts!\n");
             return 0;
         }
@@ -155,7 +155,7 @@ int play_player_turn(FILE *out, Player *player, Player *dealer, Deck *deck, char
     }
     // Player Surrender otherwise stand
     else if (action == 'X') {
-        if (can_surrender(&player->hand) && metadata->ls == 1)
+        if (can_surrender(player_hand) && metadata->ls == 1)
         {
             return 0;
         }
@@ -163,19 +163,19 @@ int play_player_turn(FILE *out, Player *player, Player *dealer, Deck *deck, char
     }
     // Player Surrender otherwise hit
     else if (action == 'Y') {
-        if (can_surrender(&player->hand) && metadata->ls == 1) {
+        if (can_surrender(player_hand) && metadata->ls == 1) {
             return 0;
         }
         // Else hit
-        add_card_to_hand(&player->hand, deal_card(deck));
-        if (is_bust(&player->hand)) {
+        add_card_to_hand(player_hand, deal_card(deck));
+        if (is_bust(player_hand)) {
             fprintf(out, "Player busts!\n");
             return 0;
         }
     }
     // Player Surrender otherwise split
     else if (action == 'Z') {
-        if (can_surrender(&player->hand) && metadata->ls == 1) {
+        if (can_surrender(player_hand) && metadata->ls == 1) {
             return 0;
         }
         // else split
@@ -242,10 +242,10 @@ void check_for_naturals(FILE *out, Hand *playerhand, Hand *dealerhand) {
 }
 
 void simulate(FILE *out, int num_simulations, char (*strategy)[STRAT_COLS], Metadata *metadata) {
-    Player player;
-    Player dealer;
+    Hand player_hand;
+    Hand dealer_hand;
     for (int i=0; i < num_simulations; i++)
     {   
-        play_shoe(out, &player, &dealer, strategy, metadata);
+        play_shoe(out, &player_hand, &dealer_hand, strategy, metadata);
     }
 }

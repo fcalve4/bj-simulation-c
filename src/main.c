@@ -3,7 +3,6 @@
 #include <time.h>
 #include <string.h>
 #include "deck.h"
-#include "player.h"
 #include "strategy.h"
 #include "simulate.h"
 #include "metadata.h"

@@ -72,12 +72,6 @@ void add_card_to_hand(Hand *hand, Card card) {
 
     // Add the card to the hand
     hand->cards[hand->num_cards++] = card;
-
-    // Update the hand's attributes
-    hand->soft_or_hard = has_soft_ace(hand);
-    hand->doubleable = can_double(hand);
-    hand->splittable = can_split(hand);
-    hand->surrenderable = can_surrender(hand);
 }
 
 
