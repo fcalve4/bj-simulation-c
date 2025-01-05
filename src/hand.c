@@ -14,11 +14,6 @@ void init_hand(Hand *hand) {
     hand->num_cards = 0;
     hand->capacity = 5; // Initial capacity
 
-    // init Booleans
-    hand->soft_or_hard = 0;
-    hand->doubleable = 0;
-    hand->splittable = 0;
-    hand->surrenderable = 0;
 }
 
 int has_soft_ace(const Hand *hand) {

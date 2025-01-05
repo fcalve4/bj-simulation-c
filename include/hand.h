@@ -7,12 +7,6 @@ typedef struct {
     Card *cards;  // Dynamically allocated array for cards
     int num_cards; // Number of cards in the hand
     int capacity; // Capacity of the hand
-
-    // Booleans
-    int soft_or_hard;
-    int doubleable;
-    int splittable;
-    int surrenderable;
 } Hand;
 
 // Hand functions
