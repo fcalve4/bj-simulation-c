@@ -14,7 +14,7 @@
 #define LS 1 // 1 for true 
 #define RSA 0 // 0 for false - TOGGLE FUNCTIONALITY NOT ADDED YET
 #define ENHC 0 // 0 for false 
-#define MAX_SPLITS 4
+#define MAX_SPLITS 4 // not factored, currently can split infinitely 
 #define BJ_PAY 1.5
 #define PEN 0.8 // Specifically, the percentage of the shoe from 0-1 that is dealt, 0.8 means 80% of the cards are dealt
 
