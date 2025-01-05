@@ -64,6 +64,7 @@ int main(int argc, char *argv[]) {
     printf("Total Hands Played: %d\n", metadata.total_hands_played);
     printf("Total Wagered: %d\n", metadata.total_wagered);
     printf("Total Won: %d\n", metadata.total_won);
+    printf("Bankroll: %d\n", metadata.bankroll);
 
     // Stop the clock, calculate the elapsed time, print the result to terminal
     end = clock();

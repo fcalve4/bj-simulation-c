@@ -14,9 +14,11 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
     Deck deck;
     init_deck(&deck, metadata->num_decks);
     shuffle_deck(&deck);
+    int hand_counter = 0;
 
     // Play hands until cut card is reached
     while (deck.top <= deck.capacity * metadata->pen) {
+        fprintf(out, "Hand #%d\n", hand_counter++);
         // Increment hand counter
         metadata->total_hands_played++;
         fprintf(out, "Total Hands Played: %d\n", metadata->total_hands_played);
@@ -41,21 +43,29 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
 
         // If enhc is false (usually it is), check for naturals immediately
         if (metadata->enhc == 0) {
-            check_for_naturals(out, player_hand, dealer_hand, metadata);
+            // If a natural is returned, return to the start of the loop, else continue play as normal
+            if (check_for_naturals(out, player_hand, dealer_hand, metadata) == 1)
+            {
+                continue;
+            }
         }
 
         // -=-=-PLAYER TURN TO ACT-=-=-
         int player_turn_loop_bool = 1; // LOOP BOOLEAN
 
         // While the player is still acting, call the player turn function
-        while (player_turn_loop_bool) {
+        while (player_turn_loop_bool && get_hand_value(player_hand) < 21) {
             fprintf(out, "--Player hand total: %d\n", get_hand_value(player_hand));
             player_turn_loop_bool = play_player_turn(out, player_hand, dealer_hand, &deck, strategy, dealer_upcard, metadata);
         }
 
         // If enhc is true (rarely is), check for naturals after player acts
         if (metadata->enhc == 1) {
-            check_for_naturals(out, player_hand, dealer_hand, metadata);
+            // If a natural is returned, return to the start of the loop, else continue play as normal
+            if (check_for_naturals(out, player_hand, dealer_hand, metadata) == 1)
+            {
+                continue;
+            }
         }
 
         // -=-=-DEALER TURN TO ACT-=-=-
@@ -63,7 +73,11 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
 
         // Determine the winner
         determine_winner(out, player_hand, dealer_hand, metadata);
+        
+        free_hand(player_hand);
+        free_hand(dealer_hand);
     }
+    free_deck(&deck);
 }
 
 
@@ -80,10 +94,6 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
     // Player hit - add 1 card and check for bust
     if (action == 'H') {
         add_card_to_hand(player_hand, deal_card(deck));
-        if (is_bust(player_hand)) {
-            fprintf(out, "Player busts!\n");
-            return 0;
-        }
     }
     // Player stand - no action needed
     else if (action == 'S') {
@@ -110,7 +120,7 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
         play_dealer_turn(out, player_hand, deck, metadata->h17);
         // Determine winner of the hand
         determine_winner(out, player_hand, dealer_hand, metadata);
-        
+
         
         // Reinitialize the player's hand and add the split card
         init_hand(player_hand);
@@ -125,23 +135,17 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
         if (can_double(player_hand))
         {
             // Double the wager
+            metadata->wager *= 2;
         }
         add_card_to_hand(player_hand, deal_card(deck));
-        if (is_bust(player_hand)) { // Is this statement necesarry? will the player ever bust when action is 'D'?
-            fprintf(out, "Player busts!\n");
-            return 0;
-        }
     }
+    
     // Player Double otherwise stand
     else if (action == 'T') {
         if (can_double(player_hand))
         {
             // Double the wager
             add_card_to_hand(player_hand, deal_card(deck));
-        }
-        if (is_bust(player_hand)) {
-            fprintf(out, "Player busts!\n");
-            return 0;
         }
         return 0;
     }
@@ -160,10 +164,6 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
         }
         // Else hit
         add_card_to_hand(player_hand, deal_card(deck));
-        if (is_bust(player_hand)) {
-            fprintf(out, "Player busts!\n");
-            return 0;
-        }
     }
     // Player Surrender otherwise split
     else if (action == 'Z') {
@@ -203,45 +203,49 @@ void determine_winner(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata 
     // Determine winner, Player wins if dealer busts or has a higher hand
     if (is_bust(player_hand) || get_hand_value(player_hand) > get_hand_value(dealer_hand)) {
         fprintf(out, "---Player wins!\n");
-        metadata->bankroll += metadata->wager;
     }
     else if (get_hand_value(player_hand) < get_hand_value(dealer_hand)) {
         fprintf(out, "---Dealer wins!\n");
-        metadata->bankroll -= metadata->wager;
     }
     else {
         fprintf(out, "---It's a push!\n");
     }
 }
 
-
-void check_for_naturals(FILE *out, Hand *playerhand, Hand *dealerhand, Metadata *metadata) {
+// CONTINUES TO NEXT HAND IF A NATURAL OCCURS, NEED TO FREE HANDS IF THIS HAPPENS TOO
+int check_for_naturals(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata *metadata) {
     // If both players have blackjack
-    if (get_hand_value(playerhand) == 21 && get_hand_value(dealerhand) == 21) {
+    if (get_hand_value(player_hand) == 21 && get_hand_value(dealer_hand) == 21) {
         fprintf(out, "---NATURAL PUSH\n");
-        return;
+        free_hand(player_hand);
+        free_hand(dealer_hand);
+        return 1;
     }
     // If player has blackjack
-    else if (get_hand_value(playerhand) == 21) {
+    else if (get_hand_value(player_hand) == 21) {
         fprintf(out, "---PLAYER BLACKJACK\n");
-        metadata->bankroll += metadata->wager * metadata->bj_pay;
-        return;
+        free_hand(player_hand);
+        free_hand(dealer_hand);
+        return 1;
     }
     // If dealer has blackjack
-    else if (get_hand_value(dealerhand) == 21) {
+    else if (get_hand_value(dealer_hand) == 21) {
         fprintf(out, "---DEALER BLACKJACK\n");
-        metadata->bankroll -= metadata->wager;
-        return;
+        free_hand(player_hand);
+        free_hand(dealer_hand);
+        return 1;
     }
     // If neither player has blackjack nothing happens
-    return;
+    return 0;
 }
 
 void simulate(FILE *out, int num_simulations, char (*strategy)[STRAT_COLS], Metadata *metadata) {
     Hand player_hand;
     Hand dealer_hand;
+    int shoe_counter = 0;
     for (int i=0; i < num_simulations; i++)
     {   
+        fprintf(out, "Shoe #%d\n", shoe_counter++);
         metadata->total_shoes_played++;
         play_shoe(out, &player_hand, &dealer_hand, strategy, metadata);
     }
