@@ -6,6 +6,7 @@
 #include "player.h"
 #include "strategy.h"
 #include "simulate.h"
+#include "metadata.h"
 
 // DECLARE CONSTANTS (WILL BE USER INPUT FROM THE UI [IMPLEMENTED LATER])
 #define NUM_DECKS 6
@@ -51,6 +52,9 @@ int main(int argc, char *argv[]) {
     char strategy[STRAT_ROWS][STRAT_COLS];
     memset(strategy, 0, sizeof(strategy));
     read_strategy_sheet(strategy_file, strategy);
+
+    // Read the metadata into a struct
+    Metadata metadata = {NUM_DECKS, H17, LS, ENHC, BJ_PAY, PEN, NUM_SIMULATIONS, BANKROLL, WAGER};
 
     // Call the simulate function to run the main game loop
     simulate(NUM_SIMULATIONS, strategy, NUM_DECKS, PEN, H17, LS, ENHC);
