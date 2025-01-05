@@ -61,6 +61,5 @@ int main(int argc, char *argv[]) {
     printf("Execution Time: %f seconds\n", cpu_time_used);
 
     return 0;
-
 }
 
