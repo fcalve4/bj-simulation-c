@@ -23,7 +23,7 @@
 #define WAGER 10
 
 // Number of rows & cols for strategy sheet array creation. Not really sure what to do with these.
-// They are constants but might change depending on how the strategy sheet is configured
+// They are constants but might change depending on how the strategy sheet is configured - EDIT: strategy sheet vals can probably be hardcoded
 #define STRAT_ROWS 37 // Player hand possibilities
 #define STRAT_COLS 10 // Dealer upcards
 
