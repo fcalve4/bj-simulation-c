@@ -4,17 +4,18 @@
 #include "player.h"
 #include "strategy.h"
 #include "simulate.h"
+#include "metadata.h"
 
 #define STRAT_COLS 10
 
 
-void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int num_decks, int pen, int h17, int ls, int enhc) {
+void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], Metadata *metadata) {
     Deck deck;
-    init_deck(&deck, num_decks);
+    init_deck(&deck, metadata->num_decks);
     shuffle_deck(&deck);
 
     // Play the shoe
-    while (deck.top <= deck.capacity * pen) {   
+    while (deck.top <= deck.capacity * metadata->pen) {   
         // Init hands
         init_hand(&player->hand);
         init_hand(&dealer->hand);
@@ -32,7 +33,7 @@ void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int
         add_card_to_hand(&dealer->hand, deal_card(&deck));
 
         // If enhc is false (usually it is), check for naturals immediately
-        if (enhc == 0) {
+        if (metadata->enhc == 0) {
             check_for_naturals(&player->hand, &dealer->hand);
         }
 
@@ -41,11 +42,11 @@ void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int
 
         // While the player is still acting, call the player turn function
         while (player_turn_loop_bool) {
-            player_turn_loop_bool = play_player_turn(player, dealer, &deck, strategy, dealer_upcard, h17, ls);
+            player_turn_loop_bool = play_player_turn(player, dealer, &deck, strategy, dealer_upcard, metadata);
         }
 
         // -=-=-DEALER TURN TO ACT-=-=-
-        play_dealer_turn(&dealer->hand, &deck, h17);
+        play_dealer_turn(&dealer->hand, &deck, metadata->h17);
 
         // Determine the winner
         determine_winner(&player->hand, &dealer->hand);
@@ -65,7 +66,7 @@ void play_shoe(Player *player, Player *dealer, char (*strategy)[STRAT_COLS], int
 // Player "make decision" function
 // This function will determine the player's action based on the strategy sheet
     // and returns 0 or 1 depending on if loop continues or breaks.
-int play_player_turn(Player *player, Player *dealer, Deck *deck, char (*strategy)[STRAT_COLS], int dealer_upcard, int h17, int ls) {
+int play_player_turn(Player *player, Player *dealer, Deck *deck, char (*strategy)[STRAT_COLS], int dealer_upcard, Metadata *metadata) {
     // Determine player action based on strategy sheet
     char action = determine_action(&player->hand, dealer_upcard, strategy);
     // Player hit - add 1 card and check for bust
@@ -96,10 +97,10 @@ int play_player_turn(Player *player, Player *dealer, Deck *deck, char (*strategy
         while (split_loop_bool) {
             // Call the player turn function for the split off hand and play normally
             // This should just play another hand and then once this loop breaks, the next hand will play via the main loop
-            split_loop_bool = play_player_turn(player, dealer, deck, strategy, dealer_upcard, h17, ls);
+            split_loop_bool = play_player_turn(player, dealer, deck, strategy, dealer_upcard, metadata);
         }
         // Play dealer turn
-        play_dealer_turn(&player->hand, deck, h17);
+        play_dealer_turn(&player->hand, deck, metadata->h17);
         // Determine winner of the hand
         determine_winner(&player->hand, &dealer->hand);
 
@@ -137,7 +138,7 @@ int play_player_turn(Player *player, Player *dealer, Deck *deck, char (*strategy
     }
     // Player Surrender otherwise stand
     else if (action == 'X') {
-        if (can_surrender(&player->hand) && ls == 1)
+        if (can_surrender(&player->hand) && metadata->ls == 1)
         {
             return 0;
         }
@@ -145,7 +146,7 @@ int play_player_turn(Player *player, Player *dealer, Deck *deck, char (*strategy
     }
     // Player Surrender otherwise hit
     else if (action == 'Y') {
-        if (can_surrender(&player->hand) && ls == 1) {
+        if (can_surrender(&player->hand) && metadata->ls == 1) {
             return 0;
         }
         // Else hit
@@ -157,7 +158,7 @@ int play_player_turn(Player *player, Player *dealer, Deck *deck, char (*strategy
     }
     // Player Surrender otherwise split
     else if (action == 'Z') {
-        if (can_surrender(&player->hand) && ls == 1) {
+        if (can_surrender(&player->hand) && metadata->ls == 1) {
             return 0;
         }
         // else split
@@ -218,11 +219,11 @@ int check_for_naturals(Hand *playerhand, Hand *dealerhand) {
     return 0;
 }
 
-void simulate(int num_simulations, char (*strategy)[STRAT_COLS], int num_decks, int pen, int h17, int ls, int enhc) {
+void simulate(int num_simulations, char (*strategy)[STRAT_COLS], Metadata *metadata) {
     Player player;
     Player dealer;
     for (int i=0; i < num_simulations; i++)
     {   
-        play_shoe(&player, &dealer, strategy, num_decks, pen, h17, ls, enhc);
+        play_shoe(&player, &dealer, strategy, metadata);
     }
 }

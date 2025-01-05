@@ -56,8 +56,9 @@ int main(int argc, char *argv[]) {
     // Read the metadata into a struct
     Metadata metadata = {NUM_DECKS, H17, LS, ENHC, BJ_PAY, PEN, NUM_SIMULATIONS, BANKROLL, WAGER};
 
+
     // Call the simulate function to run the main game loop
-    simulate(NUM_SIMULATIONS, strategy, NUM_DECKS, PEN, H17, LS, ENHC);
+    simulate(NUM_SIMULATIONS, strategy, &metadata);
 
     // Stop the clock, calculate the elapsed time, print the result to terminal
     end = clock();
