@@ -33,10 +33,11 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
         
 
         // Deal initial cards to dealer
-        add_card_to_hand(dealer_hand, deal_card(&deck));
+        Card dealer_upcard = deal_card(&deck);
+        add_card_to_hand(dealer_hand, dealer_upcard);
         // Grab the dealer upcard value now and store it separately (this is to check for naturals)
-        int dealer_upcard = get_hand_value(dealer_hand);
-        fprintf(out, "--Dealer upcard: %d\n", dealer_upcard);
+        int dealer_upcard_value = get_hand_value(dealer_hand);
+        fprintf(out, "--Dealer upcard value: %d\n", dealer_upcard_value);
 
         // Deal the dealer another hand
         add_card_to_hand(dealer_hand, deal_card(&deck));
@@ -44,8 +45,8 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
         // If enhc is false (usually it is), check for naturals immediately
         if (metadata->enhc == 0) {
             // If a natural is returned, return to the start of the loop, else continue play as normal
-            if (check_for_naturals(out, player_hand, dealer_hand, metadata) == 1)
-            {
+            if (check_for_naturals(out, player_hand, dealer_hand, metadata) == 1) {
+                free_hands(player_hand, dealer_hand);
                 continue;
             }
         }
@@ -56,14 +57,16 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
         // While the player is still acting, call the player turn function
         while (player_turn_loop_bool && get_hand_value(player_hand) < 21) {
             fprintf(out, "--Player hand total: %d\n", get_hand_value(player_hand));
-            player_turn_loop_bool = play_player_turn(out, player_hand, dealer_hand, &deck, strategy, dealer_upcard, metadata);
+            player_turn_loop_bool = play_player_turn(out, player_hand, dealer_hand, &deck, strategy,dealer_upcard, dealer_upcard_value, metadata);
         }
 
         // If enhc is true (rarely is), check for naturals after player acts
+        // Maybe we can do some work on this so we dont have 2 separate checks for if ehnc == 1. not what i would change tho.
         if (metadata->enhc == 1) {
             // If a natural is returned, return to the start of the loop, else continue play as normal
             if (check_for_naturals(out, player_hand, dealer_hand, metadata) == 1)
             {
+                free_hands(player_hand, dealer_hand);
                 continue;
             }
         }
@@ -74,8 +77,7 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
         // Determine the winner
         determine_winner(out, player_hand, dealer_hand, metadata);
         
-        free_hand(player_hand);
-        free_hand(dealer_hand);
+        free_hands(player_hand, dealer_hand);
     }
     free_deck(&deck);
 }
@@ -87,9 +89,10 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
 // Player "make decision" function
 // This function will determine the player's action based on the strategy sheet
     // and returns 0 or 1 depending on if loop continues or breaks.
-int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck, char (*strategy)[STRAT_COLS], int dealer_upcard, Metadata *metadata) {
+int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck, char (*strategy)[STRAT_COLS], Card dealer_upcard, int dealer_upcard_value, Metadata *metadata) {
     // Determine player action based on strategy sheet
-    char action = determine_action(player_hand, dealer_upcard, strategy);
+    char action;
+    action = determine_action(player_hand, dealer_upcard_value, strategy);
     fprintf(out, "PLAYER ACTION: %c\n", action);
     // Player hit - add 1 card and check for bust
     if (action == 'H') {
@@ -114,26 +117,30 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
             // Call the player turn function for the split off hand and play normally
             // This should just play another hand and then once this loop breaks, the next hand will play via the main loop
             fprintf(out, "--Player hand total: %d\n", get_hand_value(player_hand));
-            split_loop_bool = play_player_turn(out, player_hand, dealer_hand, deck, strategy, dealer_upcard, metadata);
+            split_loop_bool = play_player_turn(out, player_hand, dealer_hand, deck, strategy, dealer_upcard, dealer_upcard_value, metadata);
         }
         // Play dealer turn
         play_dealer_turn(out, player_hand, deck, metadata->h17);
         // Determine winner of the hand
         determine_winner(out, player_hand, dealer_hand, metadata);
 
-        
-        // Reinitialize the player's hand and add the split card
+        // Free the hands
+        free_hands(player_hand, dealer_hand);
+        // Reinitialize the hands
         init_hand(player_hand);
+        init_hand(dealer_hand);
+
+        // Add the split card to the player's hand & dealer upcard to dealer's hand
         add_card_to_hand(player_hand, split_card);
         add_card_to_hand(player_hand, deal_card(deck));
+        add_card_to_hand(dealer_hand, dealer_upcard);
         // Return to start of loop to continue playing the hand
     }
 
 
     // Player Double otherwise hit
     else if (action == 'D') {
-        if (can_double(player_hand))
-        {
+        if (can_double(player_hand)) {
             // Double the wager
             metadata->wager *= 2;
         }
@@ -142,8 +149,7 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
     
     // Player Double otherwise stand
     else if (action == 'T') {
-        if (can_double(player_hand))
-        {
+        if (can_double(player_hand)) {
             // Double the wager
             add_card_to_hand(player_hand, deal_card(deck));
         }
@@ -151,8 +157,7 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
     }
     // Player Surrender otherwise stand
     else if (action == 'X') {
-        if (can_surrender(player_hand) && metadata->ls == 1)
-        {
+        if (can_surrender(player_hand) && metadata->ls == 1) {
             return 0;
         }
         return 0;
@@ -217,22 +222,16 @@ int check_for_naturals(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata
     // If both players have blackjack
     if (get_hand_value(player_hand) == 21 && get_hand_value(dealer_hand) == 21) {
         fprintf(out, "---NATURAL PUSH\n");
-        free_hand(player_hand);
-        free_hand(dealer_hand);
         return 1;
     }
     // If player has blackjack
     else if (get_hand_value(player_hand) == 21) {
         fprintf(out, "---PLAYER BLACKJACK\n");
-        free_hand(player_hand);
-        free_hand(dealer_hand);
         return 1;
     }
     // If dealer has blackjack
     else if (get_hand_value(dealer_hand) == 21) {
         fprintf(out, "---DEALER BLACKJACK\n");
-        free_hand(player_hand);
-        free_hand(dealer_hand);
         return 1;
     }
     // If neither player has blackjack nothing happens
