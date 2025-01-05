@@ -35,14 +35,14 @@ int main(int argc, char *argv[]) {
     double cpu_time_used;
     start = clock();
 
-    if (argc != 2) {
-        fprintf(stderr, "Format: %s <strategy.csv>\n", argv[0]);
+    if (argc != 3) {
+        fprintf(stderr, "Format: %s <strategy.csv> <output.txt>\n", argv[0]);
         return -1;
     }
 
     // Initialize in/out files
     FILE *strategy_file = fopen(argv[1], "r");
-    // FILE *out = fopen(argv[2], "w");
+    FILE *out = fopen(argv[2], "w");
 
     // Seed random numbers
     srand(time(NULL));
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 
 
     // Call the simulate function to run the main game loop
-    simulate(NUM_SIMULATIONS, strategy, &metadata);
+    simulate(out, NUM_SIMULATIONS, strategy, &metadata);
 
     // Stop the clock, calculate the elapsed time, print the result to terminal
     end = clock();
