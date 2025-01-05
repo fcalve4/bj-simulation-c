@@ -16,8 +16,5 @@ typedef struct {
     int wager;
 } Metadata;
 
-// Function prototypes
-
-void init_metadata(Metadata *metadata);
 
 #endif
