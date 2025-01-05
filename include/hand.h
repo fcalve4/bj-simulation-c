@@ -15,6 +15,7 @@ void add_card_to_hand(Hand *hand, Card card);
 int get_hand_value(const Hand *hand);
 int is_bust(const Hand *hand);
 void free_hand(Hand *hand);
+void free_hands(Hand *player_hand, Hand *dealer_hand);
 
 int has_soft_ace(const Hand *hand);
 int can_double(const Hand *hand);

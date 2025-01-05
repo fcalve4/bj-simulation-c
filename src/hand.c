@@ -82,6 +82,11 @@ void free_hand(Hand *hand) {
     hand->num_cards = 0;
 }
 
+void free_hands(Hand *player_hand, Hand *dealer_hand) {
+    free_hand(player_hand);
+    free_hand(dealer_hand);
+}
+
 int get_hand_value(const Hand *hand) {
     int value = 0;
     int ace_count = 0;
