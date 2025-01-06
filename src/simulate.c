@@ -206,6 +206,7 @@ void play_dealer_turn(FILE *out, Hand *dealer_hand, Deck *deck, int h17)
 
 void determine_winner(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata *metadata) {
     // Determine winner, Player wins if dealer busts or has a higher hand
+    fprintf(out, "Dealer Total: %d | Player Total: %d\n", get_hand_value(dealer_hand), get_hand_value(player_hand));
     if (is_bust(player_hand) || get_hand_value(player_hand) > get_hand_value(dealer_hand)) {
         fprintf(out, "---Player wins!\n");
     }
@@ -222,16 +223,36 @@ int check_for_naturals(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata
     // If both players have blackjack
     if (get_hand_value(player_hand) == 21 && get_hand_value(dealer_hand) == 21) {
         fprintf(out, "---NATURAL PUSH\n");
+        fprintf(out, "Dealer Hand: ");
+        for (int i=0; i < dealer_hand->num_cards; i++) {
+            fprintf(out, "%d ", dealer_hand->cards[i].rank);
+        }
+        fprintf(out, "\n");
+        fprintf(out, "Player Hand: ");
+        for (int i=0; i < player_hand->num_cards; i++) {
+            fprintf(out, "%d", player_hand->cards[i].rank);
+        }
+        fprintf(out, "\n");
         return 1;
     }
     // If player has blackjack
     else if (get_hand_value(player_hand) == 21) {
         fprintf(out, "---PLAYER BLACKJACK\n");
+        fprintf(out, "Player Hand: ");
+        for (int i=0; i < player_hand->num_cards; i++) {
+            fprintf(out, "%d ", player_hand->cards[i].rank);
+        }
+        fprintf(out, "\n");
         return 1;
     }
     // If dealer has blackjack
     else if (get_hand_value(dealer_hand) == 21) {
         fprintf(out, "---DEALER BLACKJACK\n");
+        fprintf(out, "Dealer Hand: ");
+        for (int i=0; i < dealer_hand->num_cards; i++) {
+            fprintf(out, "%d", dealer_hand->cards[i].rank);
+        }
+        fprintf(out, "\n");
         return 1;
     }
     // If neither player has blackjack nothing happens
