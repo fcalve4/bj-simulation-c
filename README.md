@@ -19,7 +19,6 @@ To run this simulator, ensure the following are installed on your system:
 
 - **GCC** or another C compiler.
 - **Make** build tool.
-- A terminal or command-line interface.
 
 ### Installation
 
