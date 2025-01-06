@@ -19,7 +19,7 @@
 #define BJ_PAY 1.5
 #define PEN 0.8 // Specifically, the percentage of the shoe from 0-1 that is dealt, 0.8 means 80% of the cards are dealt
 
-#define NUM_SIMULATIONS 200 // Number of shoes to play
+#define NUM_SIMULATIONS 2000 // Number of shoes to play
 #define BANKROLL 10000
 #define WAGER 10
 
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
     printf("Total Wagered: %d\n", metadata.total_wagered);
     printf("Total Won: %d\n", metadata.total_won);
     printf("Bankroll: %d\n", metadata.bankroll);
-    printf("RTP : %f\n", (metadata.total_won )/ (float)metadata.total_wagered);
+    printf("RTP: %f %%\n", 100 * (metadata.total_won )/ (float)metadata.total_wagered);
 
     // Stop the clock, calculate the elapsed time, print the result to terminal
     end = clock();
