@@ -16,6 +16,7 @@ typedef struct {
     int num_simulations;
     int bankroll;
     int wager;
+    int wager_static; // temporary variable for splits
 
     // Tracked metrics
     int total_shoes_played;

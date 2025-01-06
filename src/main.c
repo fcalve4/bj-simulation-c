@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     read_strategy_sheet(strategy_file, strategy);
 
     // Read the metadata into a struct
-    Metadata metadata = {NUM_DECKS, H17, LS, ENHC, BJ_PAY, PEN, NUM_SIMULATIONS, BANKROLL, WAGER, 0, 0, 0, 0};
+    Metadata metadata = {NUM_DECKS, H17, LS, ENHC, BJ_PAY, PEN, NUM_SIMULATIONS, BANKROLL, WAGER, WAGER, 0, 0, 0, 0};
 
 
     // Call the simulate function to run the main game loop
@@ -65,6 +65,7 @@ int main(int argc, char *argv[]) {
     printf("Total Wagered: %d\n", metadata.total_wagered);
     printf("Total Won: %d\n", metadata.total_won);
     printf("Bankroll: %d\n", metadata.bankroll);
+    printf("RTP : %f\n", (metadata.total_won )/ (float)metadata.total_wagered);
 
     // Stop the clock, calculate the elapsed time, print the result to terminal
     end = clock();

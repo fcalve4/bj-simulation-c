@@ -16,12 +16,17 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
     shuffle_deck(&deck);
     int hand_counter = 0;
 
+
     // Play hands until cut card is reached
     while (deck.top <= deck.capacity * metadata->pen) {
         fprintf(out, "Hand #%d\n", hand_counter++);
         // Increment hand counter
         metadata->total_hands_played++;
         fprintf(out, "Total Hands Played: %d\n", metadata->total_hands_played);
+
+
+        // RESET WAGER TO DEFAULT
+        metadata->wager = metadata->wager_static;
 
         // Init hands
         init_hand(player_hand);
@@ -94,6 +99,7 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
     char action;
     action = determine_action(player_hand, dealer_upcard_value, strategy);
     fprintf(out, "PLAYER ACTION: %c\n", action);
+
     // Player hit - add 1 card and check for bust
     if (action == 'H') {
         add_card_to_hand(player_hand, deal_card(deck));
@@ -103,6 +109,8 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
         return 0;
     }
     // Player split
+    // It looks like theres a bug in the split logic
+        // When player splits for the first hand the dealer logic isnt played out, dealer stands on 14, stuff like this etc
     else if (action == 'P') {
         // Grab the split card
         Card split_card = player_hand->cards[0];
@@ -185,6 +193,7 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
     return 1; // Default is to hit
 }
 
+// Fix this somewhere else but dealer logic plays out even when player busts, this is unnecesarry and a waste
 void play_dealer_turn(FILE *out, Hand *dealer_hand, Deck *deck, int h17)
 {
     // -=-=-DEALER TURN TO ACT-=-=-
@@ -207,14 +216,39 @@ void play_dealer_turn(FILE *out, Hand *dealer_hand, Deck *deck, int h17)
 void determine_winner(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata *metadata) {
     // Determine winner, Player wins if dealer busts or has a higher hand
     fprintf(out, "Dealer Total: %d | Player Total: %d\n", get_hand_value(dealer_hand), get_hand_value(player_hand));
-    if (is_bust(player_hand) || get_hand_value(player_hand) > get_hand_value(dealer_hand)) {
+
+    if (is_bust(player_hand))
+    {
+        fprintf(out, "---Player busts!\n");
+        // Update metadata counters
+        metadata->total_wagered += metadata->wager;
+        return;
+    }
+    else if (is_bust(dealer_hand))
+    {
+        fprintf(out, "---Dealer busts!\n");
+        // Update metadata counters
+        metadata->total_won += metadata->wager * 2;
+        metadata->total_wagered += metadata->wager;
+        return;
+    }
+
+    if (get_hand_value(player_hand) > get_hand_value(dealer_hand)) {
         fprintf(out, "---Player wins!\n");
+        // Update metadata counters
+        metadata->total_won += metadata->wager * 2;
+        metadata->total_wagered += metadata->wager;
     }
     else if (get_hand_value(player_hand) < get_hand_value(dealer_hand)) {
         fprintf(out, "---Dealer wins!\n");
+        // Update metadata counters
+        metadata->total_wagered += metadata->wager;
     }
     else {
         fprintf(out, "---It's a push!\n");
+        // Update metadata counters
+        metadata->total_won += metadata->wager;
+        metadata->total_wagered += metadata->wager;
     }
 }
 
@@ -233,6 +267,11 @@ int check_for_naturals(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata
             fprintf(out, "%d", player_hand->cards[i].rank);
         }
         fprintf(out, "\n");
+
+        // Update metadata counters 
+        metadata->total_won += metadata->wager * metadata->bj_pay + metadata->wager;
+        metadata->total_wagered += metadata->wager * metadata->bj_pay + metadata->wager;
+
         return 1;
     }
     // If player has blackjack
@@ -243,6 +282,10 @@ int check_for_naturals(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata
             fprintf(out, "%d ", player_hand->cards[i].rank);
         }
         fprintf(out, "\n");
+
+        // Update metadata counters
+        metadata->total_won += metadata->wager * metadata->bj_pay + metadata->wager;
+        metadata->total_wagered += metadata->wager;
         return 1;
     }
     // If dealer has blackjack
@@ -253,6 +296,9 @@ int check_for_naturals(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata
             fprintf(out, "%d", dealer_hand->cards[i].rank);
         }
         fprintf(out, "\n");
+
+        // Update metadata counters 
+        metadata->total_wagered += metadata->wager;
         return 1;
     }
     // If neither player has blackjack nothing happens
