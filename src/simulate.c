@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-#include "hand.h"
 #include "deck.h"
 #include "strategy.h"
 #include "simulate.h"
@@ -23,7 +22,6 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
         // Increment hand counter
         metadata->total_hands_played++;
         fprintf(out, "Total Hands Played: %d\n", metadata->total_hands_played);
-
 
         // RESET WAGER TO DEFAULT
         metadata->wager = metadata->wager_static;
@@ -222,6 +220,7 @@ void determine_winner(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata 
         fprintf(out, "---Player busts!\n");
         // Update metadata counters
         metadata->total_wagered += metadata->wager;
+        metadata->bankroll -= metadata->wager;
         return;
     }
     else if (is_bust(dealer_hand))
@@ -230,6 +229,7 @@ void determine_winner(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata 
         // Update metadata counters
         metadata->total_won += metadata->wager * 2;
         metadata->total_wagered += metadata->wager;
+        metadata->bankroll += metadata->wager;
         return;
     }
 
@@ -238,11 +238,13 @@ void determine_winner(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata 
         // Update metadata counters
         metadata->total_won += metadata->wager * 2;
         metadata->total_wagered += metadata->wager;
+        metadata->bankroll += metadata->wager;
     }
     else if (get_hand_value(player_hand) < get_hand_value(dealer_hand)) {
         fprintf(out, "---Dealer wins!\n");
         // Update metadata counters
         metadata->total_wagered += metadata->wager;
+        metadata->bankroll -= metadata->wager;
     }
     else {
         fprintf(out, "---It's a push!\n");
@@ -271,7 +273,6 @@ int check_for_naturals(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata
         // Update metadata counters 
         metadata->total_won += metadata->wager * metadata->bj_pay + metadata->wager;
         metadata->total_wagered += metadata->wager * metadata->bj_pay + metadata->wager;
-
         return 1;
     }
     // If player has blackjack
@@ -286,6 +287,7 @@ int check_for_naturals(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata
         // Update metadata counters
         metadata->total_won += metadata->wager * metadata->bj_pay + metadata->wager;
         metadata->total_wagered += metadata->wager;
+        metadata->bankroll += metadata->wager * metadata->bj_pay;
         return 1;
     }
     // If dealer has blackjack
@@ -299,6 +301,7 @@ int check_for_naturals(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata
 
         // Update metadata counters 
         metadata->total_wagered += metadata->wager;
+        metadata->bankroll -= metadata->wager;
         return 1;
     }
     // If neither player has blackjack nothing happens

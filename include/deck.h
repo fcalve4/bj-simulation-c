@@ -1,7 +1,10 @@
 #ifndef DECK_H
 #define DECK_H
 
-#include "card.h"
+
+typedef struct {
+    int rank; // 1-13 (1 = Ace, 11 = Jack, 12 = Queen, 13 = King)
+} Card;
 
 typedef struct {
     Card *cards; // Dynamically allocated array of cards

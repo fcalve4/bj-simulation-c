@@ -1,7 +1,7 @@
 #ifndef HAND_H
 #define HAND_H
 
-#include "card.h"
+#include "deck.h"
 
 typedef struct {
     Card *cards;  // Dynamically allocated array for cards
