@@ -13,7 +13,6 @@ void init_hand(Hand *hand) {
     }
     hand->num_cards = 0;
     hand->capacity = 5; // Initial capacity
-
 }
 
 int has_soft_ace(const Hand *hand) {
