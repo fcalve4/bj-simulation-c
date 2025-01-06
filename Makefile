@@ -10,7 +10,7 @@ OBJDIR = obj
 BINDIR = bin
 
 # Files
-TARGET = $(BINDIR)/bj_simulation
+TARGET = $(BINDIR)/bj_sim
 SOURCES = $(wildcard $(SRCDIR)/*.c)
 OBJECTS = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SOURCES))
 
