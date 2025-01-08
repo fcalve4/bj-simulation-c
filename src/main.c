@@ -19,9 +19,11 @@
 #define BJ_PAY 1.5
 #define PEN 0.8 // Specifically, the percentage of the shoe from 0-1 that is dealt, 0.8 means 80% of the cards are dealt
 
-#define NUM_SIMULATIONS 100 // Number of shoes to play
+#define NUM_SIMULATIONS 100000 // Number of shoes to play
 #define BANKROLL 10000
 #define WAGER 10
+
+// Note - insurance is not implemented yet, but insurance is never taken in basic strategy, so this shouldn't affect basic RTP calculations
 
 // Number of rows & cols for strategy sheet array creation. Not really sure what to do with these.
 // They are constants but might change depending on how the strategy sheet is configured - EDIT: strategy sheet vals can probably be hardcoded

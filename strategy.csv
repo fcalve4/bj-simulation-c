@@ -43,7 +43,7 @@ P,P,P,P,P,P,P,P,P,P,splitA
 Key, 
 H=hit, 
 S=stand, 
-P=split, 
+P=split,
 D=double/hit, 
 T=double/stand, 
 X=surrender/stand, 

@@ -97,15 +97,37 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
     char action;
     action = determine_action(player_hand, dealer_upcard_value, strategy);
     fprintf(out, "PLAYER ACTION: %c\n", action);
+    
+    // ORDER OF OPERATIONS
+    // 1. Can/Should the player surrender?
+    // 2. Can/Should the player split?
+    // 2. Can/Should the player double?
+    // 2. Should the player hit/stand?
 
-    // Player hit - add 1 card and check for bust
-    if (action == 'H') {
-        add_card_to_hand(player_hand, deal_card(deck));
-    }
-    // Player stand - no action needed
-    else if (action == 'S') {
+    // Player Surrender otherwise stand
+    if (action == 'X') {
+        if (can_surrender(player_hand) && metadata->ls == 1) {
+            return 0;
+        }
         return 0;
     }
+    // Player Surrender otherwise hit
+    else if (action == 'Y') {
+        if (can_surrender(player_hand) && metadata->ls == 1) {
+            return 0;
+        }
+        // Else hit
+        add_card_to_hand(player_hand, deal_card(deck));
+    }
+    // Player Surrender otherwise split
+    else if (action == 'Z') {
+        if (can_surrender(player_hand) && metadata->ls == 1) {
+            return 0;
+        }
+        // else split
+        return 0;
+    }
+
     // Player split
     // It looks like theres a bug in the split logic
         // When player splits for the first hand the dealer logic isnt played out, dealer stands on 14, stuff like this etc
@@ -161,27 +183,12 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
         }
         return 0;
     }
-    // Player Surrender otherwise stand
-    else if (action == 'X') {
-        if (can_surrender(player_hand) && metadata->ls == 1) {
-            return 0;
-        }
-        return 0;
-    }
-    // Player Surrender otherwise hit
-    else if (action == 'Y') {
-        if (can_surrender(player_hand) && metadata->ls == 1) {
-            return 0;
-        }
-        // Else hit
+    // Player hit - add 1 card and check for bust
+    else if (action == 'H') {
         add_card_to_hand(player_hand, deal_card(deck));
     }
-    // Player Surrender otherwise split
-    else if (action == 'Z') {
-        if (can_surrender(player_hand) && metadata->ls == 1) {
-            return 0;
-        }
-        // else split
+    // Player stand - no action needed
+    else if (action == 'S') {
         return 0;
     }
     else {

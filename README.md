@@ -19,7 +19,6 @@ To run this simulator, ensure the following are installed on your system:
 
 - **GCC** or another C compiler.
 - **Make** build tool.
-- A terminal or command-line interface.
 
 ### Installation
 
@@ -45,18 +44,18 @@ make
 
 ## Usage
 
-To run the simulator, provide a **strategy CSV file** as input:
+To run the simulator, provide a **strategy CSV file** as input and a **output TXT file** for the output:
 
 ```bash
-./bin/bj_sim <strategy.csv>
+./bin/bj_sim <strategy.csv> <output.txt>
 ```
 
 ### Example
 
-If you have a file `basic_strategy.csv`, execute:
+If you have files `basic_strategy.csv` and `output.txt`, execute:
 
 ```bash
-./bin/bj_sim basic_strategy.csv
+./bin/bj_sim basic_strategy.csv output.txt
 ```
 
 This will simulate blackjack hands based on the specified strategy and provide detailed output of the simulation results.
