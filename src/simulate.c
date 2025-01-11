@@ -178,10 +178,12 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
             return 2;
         }
         // else split 
-        else
-        {
-            // call split function
+        else {
+            if (can_split(player_hand, metadata)) {
+            // Split the hand
+            metadata->num_times_split++;
             split(out, player_hand, dealer_hand, deck, strategy, dealer_upcard, dealer_upcard_value, metadata);
+        }
         }
     }
 
@@ -189,7 +191,12 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
     // It looks like theres a bug in the split logic
         // When player splits for the first hand the dealer logic isnt played out, dealer stands on 14, stuff like this etc
     else if (action == 'P') {
-        split(out, player_hand, dealer_hand, deck, strategy, dealer_upcard, dealer_upcard_value, metadata);
+        printf("Player split - metadata->num_times_split: %d\n", metadata->num_times_split);
+        if (can_split(player_hand, metadata)) {
+            // Split the hand
+            metadata->num_times_split++;
+            split(out, player_hand, dealer_hand, deck, strategy, dealer_upcard, dealer_upcard_value, metadata);
+        }
     }
 
 

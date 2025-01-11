@@ -10,6 +10,7 @@ typedef struct {
     int ls;
     int enhc;
     float bj_pay;
+    int max_splits;
     float pen;
 
     // Simulation parameters
@@ -23,6 +24,10 @@ typedef struct {
     int total_hands_played;
     int total_wagered;
     int total_won;
+
+
+    // REQUIRED TRACKING VARIABLES
+    int num_times_split;
 
 
 } Metadata;

@@ -2,6 +2,7 @@
 #define HAND_H
 
 #include "deck.h"
+#include "metadata.h"
 
 typedef struct {
     Card *cards;  // Dynamically allocated array for cards
@@ -19,7 +20,7 @@ void free_hands(Hand *player_hand, Hand *dealer_hand);
 
 int has_soft_ace(const Hand *hand);
 int can_double(const Hand *hand);
-int can_split(const Hand *hand);
+int can_split(const Hand *hand, Metadata *metadata);
 int can_surrender(const Hand *hand);
 
 #endif

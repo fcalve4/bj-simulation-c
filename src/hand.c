@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "hand.h"
+#include "metadata.h"
 
 
 void init_hand(Hand *hand) {
@@ -32,7 +33,12 @@ int can_double(const Hand *hand) {
     return hand->num_cards == 2;
 }
 
-int can_split(const Hand *hand) {
+int can_split(const Hand *hand, Metadata *metadata) {
+
+    if (metadata->num_times_split >= metadata->max_splits) {
+        return 0;
+    }
+
     return hand->num_cards == 2 && hand->cards[0].rank == hand->cards[1].rank;
 }
 int can_surrender(const Hand *hand) {

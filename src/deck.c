@@ -52,6 +52,8 @@ void shuffle_deck(Deck *deck) {
 
 Card deal_card(Deck *deck) {
     if (deck->cards == NULL || deck->top >= deck->capacity) {
+        printf("deck->top: %d\n", deck->top);
+        printf("deck->capacity: %d\n", deck->capacity);
         fprintf(stderr, "Error: No more cards in the deck.\n");
         exit(1);
     }
