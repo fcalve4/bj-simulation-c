@@ -59,5 +59,6 @@ Card deal_card(Deck *deck) {
     }
     deck->top++;
     Card card = deck->cards[deck->top];
+    printf("Dealing Card: %d\n", card.rank);
     return card;
 }
