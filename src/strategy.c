@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "strategy.h"
+#include "metadata.h"
 
 #define STRAT_ROWS 37 // Number of player hand conditions
 #define STRAT_COLS 10 // Dealer's upcards (2 to Ace)
@@ -25,12 +26,12 @@ void read_strategy_sheet(FILE *file, char (*strategy_array)[STRAT_COLS])
     fclose(file);
 }
 
-char determine_action(const Hand *player_hand, int dealer_upcard, char (*strategy_array)[STRAT_COLS])
+char determine_action(const Hand *player_hand, int dealer_upcard, char (*strategy_array)[STRAT_COLS], Metadata *metadata)
 {
     int player_total = get_hand_value(player_hand);
     int row_index;
 
-    if (can_split(player_hand))
+    if (can_split(player_hand, metadata))
     {
         int value = player_hand->cards[0].rank; // Store the card that we have two of
         // For splitable hands, decisions start at row #28 and index 27 (zero index for array)
