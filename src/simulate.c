@@ -92,6 +92,39 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
 }
 
 
+void split(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck, char (*strategy)[STRAT_COLS], Card dealer_upcard, int dealer_upcard_value, Metadata *metadata) {
+    // Grab the split card
+    Card split_card = player_hand->cards[0];
+    fprintf(out, "-------PLAYER SPLITTING!------[%d]----\n", split_card.rank);
+    // Create a new loop for the split off hand.
+    int split_loop_bool = 1;
+    // Reinitialize the player's hand and add the split card + additional card
+    init_hand(player_hand);
+    add_card_to_hand(player_hand, split_card);
+    add_card_to_hand(player_hand, deal_card(deck));
+    while (split_loop_bool) {
+        // Call the player turn function for the split off hand and play normally
+        // This should just play another hand and then once this loop breaks, the next hand will play via the main loop
+        fprintf(out, "--Player hand total: %d\n", get_hand_value(player_hand));
+        split_loop_bool = play_player_turn(out, player_hand, dealer_hand, deck, strategy, dealer_upcard, dealer_upcard_value, metadata);
+    }
+    // Play dealer turn
+    play_dealer_turn(out, player_hand, deck, metadata->h17);
+    // Determine winner of the hand
+    determine_winner(out, player_hand, dealer_hand, metadata);
+
+    // Free the hands
+    free_hands(player_hand, dealer_hand);
+    // Reinitialize the hands
+    init_hand(player_hand);
+    init_hand(dealer_hand);
+
+    // Add the split card to the player's hand & dealer upcard to dealer's hand
+    add_card_to_hand(player_hand, split_card);
+    add_card_to_hand(player_hand, deal_card(deck));
+    add_card_to_hand(dealer_hand, dealer_upcard);
+    // Return to start of loop to continue playing the hand
+}
 
 
 
@@ -100,7 +133,8 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
     // and returns 0 or 1 depending on if loop continues or breaks.
     // returns 2 for surrender, as this is a special case
 int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck, char (*strategy)[STRAT_COLS], Card dealer_upcard, int dealer_upcard_value, Metadata *metadata) {
-    // Determine player action based on strategy sheet
+   
+   // Determine player action based on strategy sheet
     char action;
     action = determine_action(player_hand, dealer_upcard_value, strategy);
     fprintf(out, "PLAYER ACTION: %c\n", action);
@@ -113,6 +147,7 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
 
     // Player Surrender otherwise stand
     if (action == 'X') {
+        // Check if surrender is possible
         if (metadata->ls == 1 && can_surrender(player_hand)) {
             metadata->total_wagered += metadata->wager;
             metadata->total_won += metadata->wager / 2;
@@ -123,6 +158,7 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
     }
     // Player Surrender otherwise hit
     else if (action == 'Y') {
+        // Check if surrender is possible
         if (metadata->ls == 1 && can_surrender(player_hand)){
             metadata->total_wagered += metadata->wager;
             metadata->total_won += metadata->wager / 2;
@@ -134,51 +170,26 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
     }
     // Player Surrender otherwise split
     else if (action == 'Z') {
+        // Check if surrender is possible
         if (metadata->ls == 1 && can_surrender(player_hand)) {
             metadata->total_wagered += metadata->wager;
             metadata->total_won += metadata->wager / 2;
             metadata->bankroll -= metadata->wager / 2;
             return 2;
         }
-        // else split ? how do we make the player split?
-        return 0;
+        // else split 
+        else
+        {
+            // call split function
+            split(out, player_hand, dealer_hand, deck, strategy, dealer_upcard, dealer_upcard_value, metadata);
+        }
     }
 
     // Player split
     // It looks like theres a bug in the split logic
         // When player splits for the first hand the dealer logic isnt played out, dealer stands on 14, stuff like this etc
     else if (action == 'P') {
-        // Grab the split card
-        Card split_card = player_hand->cards[0];
-        fprintf(out, "-------PLAYER SPLITTING!------[%d]----\n", split_card.rank);
-        // Create a new loop for the split off hand.
-        int split_loop_bool = 1;
-        // Reinitialize the player's hand and add the split card + additional card
-        init_hand(player_hand);
-        add_card_to_hand(player_hand, split_card);
-        add_card_to_hand(player_hand, deal_card(deck));
-        while (split_loop_bool) {
-            // Call the player turn function for the split off hand and play normally
-            // This should just play another hand and then once this loop breaks, the next hand will play via the main loop
-            fprintf(out, "--Player hand total: %d\n", get_hand_value(player_hand));
-            split_loop_bool = play_player_turn(out, player_hand, dealer_hand, deck, strategy, dealer_upcard, dealer_upcard_value, metadata);
-        }
-        // Play dealer turn
-        play_dealer_turn(out, player_hand, deck, metadata->h17);
-        // Determine winner of the hand
-        determine_winner(out, player_hand, dealer_hand, metadata);
-
-        // Free the hands
-        free_hands(player_hand, dealer_hand);
-        // Reinitialize the hands
-        init_hand(player_hand);
-        init_hand(dealer_hand);
-
-        // Add the split card to the player's hand & dealer upcard to dealer's hand
-        add_card_to_hand(player_hand, split_card);
-        add_card_to_hand(player_hand, deal_card(deck));
-        add_card_to_hand(dealer_hand, dealer_upcard);
-        // Return to start of loop to continue playing the hand
+        split(out, player_hand, dealer_hand, deck, strategy, dealer_upcard, dealer_upcard_value, metadata);
     }
 
 
