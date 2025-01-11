@@ -18,17 +18,17 @@ void play_hand(FILE *out, Deck *deck, Hand *player_hand, Hand *dealer_hand, char
     init_hand(dealer_hand);
     
     // Deal initial cards to player
-    add_card_to_hand(player_hand, deal_card(out, deck));
-    add_card_to_hand(player_hand, deal_card(out, deck));
+    add_card_to_hand(player_hand, deal_card(deck));
+    add_card_to_hand(player_hand, deal_card(deck));
     
     // Deal initial cards to dealer
-    Card dealer_upcard = deal_card(out, deck);
+    Card dealer_upcard = deal_card(deck);
     add_card_to_hand(dealer_hand, dealer_upcard);
     // Grab the dealer upcard value now and store it separately (this is to check for naturals)
     int dealer_upcard_value = get_hand_value(dealer_hand);
     fprintf(out, "Dealer Upcard Value: %d\n", dealer_upcard_value);
     // Deal the dealer another hand
-    add_card_to_hand(dealer_hand, deal_card(out, deck));
+    add_card_to_hand(dealer_hand, deal_card(deck));
     // If enhc is false (usually it is), check for naturals immediately
     if (metadata->enhc == 0) {
         // If a natural is returned, return to the start of the loop, else continue play as normal
@@ -92,7 +92,7 @@ void split(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck, char (*s
     // Reinitialize the player's hand and add the split card + additional card
     init_hand(player_hand);
     add_card_to_hand(player_hand, split_card);
-    add_card_to_hand(player_hand, deal_card(out, deck));
+    add_card_to_hand(player_hand, deal_card(deck));
     while (split_loop_bool) {
         // Call the player turn function for the split off hand and play normally
         // This should just play another hand and then once this loop breaks, the next hand will play via the main loop
@@ -112,7 +112,7 @@ void split(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck, char (*s
 
     // Add the split card to the player's hand & dealer upcard to dealer's hand
     add_card_to_hand(player_hand, split_card);
-    add_card_to_hand(player_hand, deal_card(out, deck));
+    add_card_to_hand(player_hand, deal_card(deck));
     add_card_to_hand(dealer_hand, dealer_upcard);
     // Return to start of loop to continue playing the hand
 }
@@ -158,7 +158,7 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
             return 2;
         }
         // Else hit
-        add_card_to_hand(player_hand, deal_card(out, deck));
+        add_card_to_hand(player_hand, deal_card(deck));
     }
     // Player Surrender otherwise split
     else if (action == 'Z') {
@@ -196,11 +196,11 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
     else if (action == 'D') {
         if (can_double(player_hand)) {
             // Double the wager
-            add_card_to_hand(player_hand, deal_card(out, deck));
+            add_card_to_hand(player_hand, deal_card(deck));
             return 0;
         }
         else{
-            add_card_to_hand(player_hand, deal_card(out, deck));
+            add_card_to_hand(player_hand, deal_card(deck));
         }
         
         
@@ -210,14 +210,14 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
     else if (action == 'T') {
         if (can_double(player_hand)) {
             // Double the wager
-            add_card_to_hand(player_hand, deal_card(out, deck));
+            add_card_to_hand(player_hand, deal_card(deck));
             return 0;
         }
         return 0;
     }
     // Player hit - add 1 card and check for bust
     else if (action == 'H') {
-        add_card_to_hand(player_hand, deal_card(out, deck));
+        add_card_to_hand(player_hand, deal_card(deck));
     }
     // Player stand - no action needed
     else if (action == 'S') {
@@ -239,7 +239,7 @@ void play_dealer_turn(FILE *out, Hand *dealer_hand, Deck *deck, int h17)
     // case 1: H17, dealer hits on soft 17s
     if (h17 == 1) {
         while (get_hand_value(dealer_hand) < 17 || ((has_soft_ace(dealer_hand) == 1) && get_hand_value(dealer_hand) == 17)) {
-        Card card = deal_card(out, deck);
+        Card card = deal_card(deck);
         fprintf(out, "Adding card to dealer hand: %d\n", card.rank);
         add_card_to_hand(dealer_hand, card);
         fprintf(out, "Dealer hand total: %d\n", get_hand_value(dealer_hand));
@@ -248,7 +248,7 @@ void play_dealer_turn(FILE *out, Hand *dealer_hand, Deck *deck, int h17)
     // case 2: S17, dealer stands on all 17s
     else {
         while (get_hand_value(dealer_hand) < 17) {
-        Card card = deal_card(out, deck);
+        Card card = deal_card(deck);
         fprintf(out, "Adding card to dealer hand: %d\n", card.rank);
         add_card_to_hand(dealer_hand, card);
         fprintf(out, "Dealer hand total: %d\n", get_hand_value(dealer_hand));

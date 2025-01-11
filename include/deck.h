@@ -16,7 +16,7 @@ typedef struct {
 // Deck functions
 void init_deck(Deck *deck, int numDecks);
 void shuffle_deck(Deck *deck);
-Card deal_card(FILE *out, Deck *deck);
+Card deal_card(Deck *deck);
 void free_deck(Deck *deck);
 
 #endif
