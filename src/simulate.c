@@ -58,9 +58,15 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
         int player_turn_loop_bool = 1; // LOOP BOOLEAN
 
         // While the player is still acting, call the player turn function
-        while (player_turn_loop_bool && get_hand_value(player_hand) < 21) {
+        while (player_turn_loop_bool == 1 && get_hand_value(player_hand) < 21) {
             fprintf(out, "--Player hand total: %d\n", get_hand_value(player_hand));
             player_turn_loop_bool = play_player_turn(out, player_hand, dealer_hand, &deck, strategy,dealer_upcard, dealer_upcard_value, metadata);
+        }
+
+        if (player_turn_loop_bool == 2) // IF THEY PLAYER HAS SURRENDERD,
+        {
+            // continue to the start of the loop and don't evaluate hands
+            continue;
         }
 
         // If enhc is true (rarely is), check for naturals after player acts
@@ -92,6 +98,7 @@ void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand, char (*strategy)
 // Player "make decision" function
 // This function will determine the player's action based on the strategy sheet
     // and returns 0 or 1 depending on if loop continues or breaks.
+    // returns 2 for surrender, as this is a special case
 int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck, char (*strategy)[STRAT_COLS], Card dealer_upcard, int dealer_upcard_value, Metadata *metadata) {
     // Determine player action based on strategy sheet
     char action;
@@ -106,25 +113,34 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
 
     // Player Surrender otherwise stand
     if (action == 'X') {
-        if (can_surrender(player_hand) && metadata->ls == 1) {
-            return 0;
+        if (metadata->ls == 1 && can_surrender(player_hand)) {
+            metadata->total_wagered += metadata->wager;
+            metadata->total_won += metadata->wager / 2;
+            metadata->bankroll -= metadata->wager / 2;
+            return 2;
         }
         return 0;
     }
     // Player Surrender otherwise hit
     else if (action == 'Y') {
-        if (can_surrender(player_hand) && metadata->ls == 1) {
-            return 0;
+        if (metadata->ls == 1 && can_surrender(player_hand)){
+            metadata->total_wagered += metadata->wager;
+            metadata->total_won += metadata->wager / 2;
+            metadata->bankroll -= metadata->wager / 2;
+            return 2;
         }
         // Else hit
         add_card_to_hand(player_hand, deal_card(deck));
     }
     // Player Surrender otherwise split
     else if (action == 'Z') {
-        if (can_surrender(player_hand) && metadata->ls == 1) {
-            return 0;
+        if (metadata->ls == 1 && can_surrender(player_hand)) {
+            metadata->total_wagered += metadata->wager;
+            metadata->total_won += metadata->wager / 2;
+            metadata->bankroll -= metadata->wager / 2;
+            return 2;
         }
-        // else split
+        // else split ? how do we make the player split?
         return 0;
     }
 

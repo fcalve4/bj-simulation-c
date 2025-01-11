@@ -8,6 +8,8 @@
 #include "simulate.h"
 #include "metadata.h"
 
+// CURRENT WORKING RULESET -> 6D H17 DAS 3:2
+
 // DECLARE CONSTANTS (WILL BE USER INPUT FROM THE COMMAND LINE via flags [IMPLEMENTED LATER]
 #define NUM_DECKS 6
 #define H17 1 // 1 for true
@@ -19,7 +21,7 @@
 #define BJ_PAY 1.5
 #define PEN 0.8 // Specifically, the percentage of the shoe from 0-1 that is dealt, 0.8 means 80% of the cards are dealt
 
-#define NUM_SIMULATIONS 100000 // Number of shoes to play
+#define NUM_SIMULATIONS 1000 // Number of shoes to play
 #define BANKROLL 10000
 #define WAGER 10
 
