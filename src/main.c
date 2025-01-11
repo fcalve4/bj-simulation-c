@@ -21,7 +21,7 @@
 #define BJ_PAY 1.5
 #define PEN 0.8 // Specifically, the percentage of the shoe from 0-1 that is dealt, 0.8 means 80% of the cards are dealt
 
-#define NUM_SIMULATIONS 1000000 // Number of shoes to play
+#define NUM_SIMULATIONS 1000 // Number of shoes to play
 #define BANKROLL 10000
 #define WAGER 10
 
@@ -59,7 +59,6 @@ int main(int argc, char *argv[]) {
 
     // Read the metadata into a struct
     Metadata metadata = {NUM_DECKS, H17, LS, ENHC, MAX_SPLITS, BJ_PAY, PEN, NUM_SIMULATIONS, BANKROLL, WAGER, WAGER, 0, 0, 0, 0, 0};
-    printf("max_splits: %d\n", metadata.max_splits);
 
     // Call the simulate function to run the main game loop
     simulate(out, NUM_SIMULATIONS, strategy, &metadata);

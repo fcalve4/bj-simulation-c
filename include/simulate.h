@@ -8,6 +8,7 @@
 #define STRAT_COLS 10
 
 // Simulate functions
+void play_hand(FILE *out, Deck *deck, Hand *player_hand, Hand *dealer_hand, char (*strategy)[STRAT_COLS], Metadata *metadata);
 void play_shoe(FILE* out, Hand *player_hand, Hand *dealer_hand, char (*strategy)[STRAT_COLS], Metadata *metadata);
 int check_for_naturals(FILE* out, Hand *player_hand, Hand *dealer_hand, Metadata *metadata);
 int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck, char (*strategy)[STRAT_COLS], Card dealer_upcard, int dealer_upcard_value, Metadata *metadata);
