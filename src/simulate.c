@@ -10,7 +10,7 @@
 void play_hand(FILE *out, Deck *deck, Hand *player_hand, Hand *dealer_hand, char (*strategy)[STRAT_COLS], Metadata *metadata) {
     // Increment hand counter
     metadata->total_hands_played++;
-    fprintf(out, "New Hand | Hands Played: %d | Bankroll: %d\n", metadata->total_hands_played, metadata->bankroll);
+    fprintf(out, "\nNew Hand | Hands Played: %d | Bankroll: %d\n", metadata->total_hands_played, metadata->bankroll);
     // RESET WAGER TO DEFAULT
     metadata->wager = metadata->wager_static;
     // Init hands
@@ -18,8 +18,12 @@ void play_hand(FILE *out, Deck *deck, Hand *player_hand, Hand *dealer_hand, char
     init_hand(dealer_hand);
     
     // Deal initial cards to player
-    add_card_to_hand(player_hand, deal_card(deck));
-    add_card_to_hand(player_hand, deal_card(deck));
+    Card card1 = deal_card(deck);
+    fprintf(out, "+Adding INITIAL card to player hand: %d\n", card1.rank);
+    add_card_to_hand(player_hand, card1);
+    Card card2 = deal_card(deck);
+    fprintf(out, "+Adding INITIAL card to player hand: %d\n", card2.rank);
+    add_card_to_hand(player_hand, card2);
     
     // Deal initial cards to dealer
     Card dealer_upcard = deal_card(deck);
@@ -42,7 +46,7 @@ void play_hand(FILE *out, Deck *deck, Hand *player_hand, Hand *dealer_hand, char
     // While the player is still acting, call the player turn function
     while (player_turn_loop_bool == 1 && get_hand_value(player_hand) < 21) {
         fprintf(out, "Player Total: %d\n", get_hand_value(player_hand));
-        player_turn_loop_bool = play_player_turn(out, player_hand, dealer_hand, deck, strategy,dealer_upcard, dealer_upcard_value, metadata);
+        player_turn_loop_bool = play_player_turn(out, player_hand, dealer_hand, deck, strategy, dealer_upcard, dealer_upcard_value, metadata);
     }
     if (player_turn_loop_bool == 2) // IF THEY PLAYER HAS SURRENDERD,
     {
@@ -158,7 +162,9 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
             return 2;
         }
         // Else hit
-        add_card_to_hand(player_hand, deal_card(deck));
+        Card card = deal_card(deck);
+        fprintf(out, "+Adding card to player hand: %d\n", card.rank);
+        add_card_to_hand(player_hand, card);
     }
     // Player Surrender otherwise split
     else if (action == 'Z') {
@@ -196,28 +202,38 @@ int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand, Deck *deck
     else if (action == 'D') {
         if (can_double(player_hand)) {
             // Double the wager
-            add_card_to_hand(player_hand, deal_card(deck));
+            metadata->wager *= 2;
+            fprintf(out, "Doubling and setting new wager value to: %d\n", metadata->wager);
+            Card card = deal_card(deck);
+            fprintf(out, "+Adding card to player hand: %d\n", card.rank);
+            add_card_to_hand(player_hand, card);
             return 0;
         }
         else{
-            add_card_to_hand(player_hand, deal_card(deck));
+            Card card = deal_card(deck);
+            fprintf(out, "+Adding card to player hand: %d\n", card.rank);
+            add_card_to_hand(player_hand, card);
         }
-        
-        
     }
     
     // Player Double otherwise stand
     else if (action == 'T') {
         if (can_double(player_hand)) {
             // Double the wager
-            add_card_to_hand(player_hand, deal_card(deck));
+            metadata->wager *= 2;
+            fprintf(out, "Doubling and setting new wager value to: %d\n", metadata->wager);
+            Card card = deal_card(deck);
+            fprintf(out, "+Adding card to player hand: %d\n", card.rank);
+            add_card_to_hand(player_hand, card);
             return 0;
         }
         return 0;
     }
     // Player hit - add 1 card and check for bust
     else if (action == 'H') {
-        add_card_to_hand(player_hand, deal_card(deck));
+        Card card = deal_card(deck);
+        fprintf(out, "+Adding card to player hand: %d\n", card.rank);
+        add_card_to_hand(player_hand, card);
     }
     // Player stand - no action needed
     else if (action == 'S') {
@@ -240,7 +256,7 @@ void play_dealer_turn(FILE *out, Hand *dealer_hand, Deck *deck, int h17)
     if (h17 == 1) {
         while (get_hand_value(dealer_hand) < 17 || ((has_soft_ace(dealer_hand) == 1) && get_hand_value(dealer_hand) == 17)) {
         Card card = deal_card(deck);
-        fprintf(out, "Adding card to dealer hand: %d\n", card.rank);
+        fprintf(out, "+Adding card to dealer hand: %d\n", card.rank);
         add_card_to_hand(dealer_hand, card);
         fprintf(out, "Dealer hand total: %d\n", get_hand_value(dealer_hand));
         }
@@ -249,7 +265,7 @@ void play_dealer_turn(FILE *out, Hand *dealer_hand, Deck *deck, int h17)
     else {
         while (get_hand_value(dealer_hand) < 17) {
         Card card = deal_card(deck);
-        fprintf(out, "Adding card to dealer hand: %d\n", card.rank);
+        fprintf(out, "+Adding card to dealer hand: %d\n", card.rank);
         add_card_to_hand(dealer_hand, card);
         fprintf(out, "Dealer hand total: %d\n", get_hand_value(dealer_hand));
         }
@@ -332,7 +348,10 @@ int check_for_naturals(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata
         // Update metadata counters
         metadata->total_won += metadata->wager * metadata->bj_pay + metadata->wager;
         metadata->total_wagered += metadata->wager;
+        fprintf(out,"Bankroll before update: %d\n", metadata->bankroll);
+        fprintf(out, "wager=%d * bj_pay=%f = %f\n", metadata->wager, metadata->bj_pay, metadata->wager * metadata->bj_pay);
         metadata->bankroll += metadata->wager * metadata->bj_pay;
+        fprintf(out, "Bankroll after update: %d\n", metadata->bankroll);
         return 1;
     }
     // If dealer has blackjack
@@ -356,10 +375,9 @@ int check_for_naturals(FILE *out, Hand *player_hand, Hand *dealer_hand, Metadata
 void simulate(FILE *out, int num_simulations, char (*strategy)[STRAT_COLS], Metadata *metadata) {
     Hand player_hand;
     Hand dealer_hand;
-    for (int i=0; i < num_simulations; i++)
-    {   
+    for (int i=0; i < num_simulations; i++) {   
         metadata->total_shoes_played++;
-        fprintf(out, "Total Shoes Played: %d | Total Hands Played: %d | Total Wagered: %d | Total Won: %d | Bankroll: %d | RTP: %f %%\n", metadata->total_shoes_played, metadata->total_hands_played, metadata->total_wagered, metadata->total_won, metadata->bankroll, 100 * (double)(metadata->total_won) / (metadata->total_wagered));
+        fprintf(out, "\n***Total Shoes Played: %d | Total Hands Played: %d | Total Wagered: %d | Total Won: %d | Bankroll: %d | RTP: %f %%\n", metadata->total_shoes_played, metadata->total_hands_played, metadata->total_wagered, metadata->total_won, metadata->bankroll, 100 * (double)(metadata->total_won) / (metadata->total_wagered));
         play_shoe(out, &player_hand, &dealer_hand, strategy, metadata);
     }
 }

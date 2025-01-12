@@ -1,6 +1,8 @@
 #ifndef METADATA_H
 #define METADATA_H
 
+#include <stdint.h>
+
 // Metadata struct for storing user input / game constants
 
 typedef struct {
@@ -8,9 +10,11 @@ typedef struct {
     int num_decks;
     int h17;
     int ls;
+    int das;
+    int rsa;
     int enhc;
-    float bj_pay;
     int max_splits;
+    float bj_pay;
     float pen;
 
     // Simulation parameters
