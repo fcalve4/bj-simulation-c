@@ -22,8 +22,8 @@
 #define BJ_PAY 1.5
 #define PEN 0.8 // Specifically, the percentage of the shoe from 0-1 that is dealt, 0.8 means 80% of the cards are dealt
 
-#define NUM_SIMULATIONS 50000 // Number of shoes to play
-#define BANKROLL 10000
+#define NUM_SIMULATIONS 100000 // Number of shoes to play
+#define BANKROLL 10000000
 #define WAGER 10
 
 // Note - insurance is not implemented yet, but insurance is never taken in basic strategy, so this shouldn't affect basic RTP calculations
@@ -60,33 +60,6 @@ int main(int argc, char *argv[]) {
 
     // Read the metadata into a struct
     Metadata metadata = {NUM_DECKS, H17, LS, DAS, RSA, ENHC, MAX_SPLITS, BJ_PAY, PEN, NUM_SIMULATIONS, BANKROLL, WAGER, WAGER, 0, 0, 0, 0, 0};
-
-    // Print all the values using dot notation
-    printf("Rules:\n");
-    printf("  Number of Decks: %d\n", metadata.num_decks);
-    printf("  Hit on Soft 17 (H17): %d\n", metadata.h17);
-    printf("  Late Surrender (LS): %d\n", metadata.ls);
-    printf("  Double after split (DAS): %d\n", metadata.das);
-    printf("  European No-Hole Card (ENHC): %d\n", metadata.enhc);
-    printf("  Blackjack Payout: %.2f\n", metadata.bj_pay);
-    printf("  Maximum Splits: %d\n", metadata.max_splits);
-    printf("  Penetration: %.2f\n\n", metadata.pen);
-
-    printf("Simulation Parameters:\n");
-    printf("  Number of Simulations: %d\n", metadata.num_simulations);
-    printf("  Bankroll: %d\n", metadata.bankroll);
-    printf("  Wager: %d\n", metadata.wager);
-    printf("  Wager (Static): %d\n\n", metadata.wager_static);
-
-    printf("Tracked Metrics:\n");
-    printf("  Total Shoes Played: %d\n", metadata.total_shoes_played);
-    printf("  Total Hands Played: %d\n", metadata.total_hands_played);
-    printf("  Total Wagered: %d\n", metadata.total_wagered);
-    printf("  Total Won: %d\n", metadata.total_won);
-
-    printf("Required Tracking Variables:\n");
-    printf("  Number of Times Split: %d\n", metadata.num_times_split);
-
 
     // Call the simulate function to run the main game loop
     simulate(out, NUM_SIMULATIONS, strategy, &metadata);
