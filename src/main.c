@@ -4,7 +4,7 @@
 #include <time.h>
 #include <string.h>
 
-#include "deck.h"
+#include "shoe.h"
 #include "strategy.h"
 #include "simulate.h"
 #include "metadata.h"
@@ -22,8 +22,8 @@
 #define BJ_PAY 1.5
 #define PEN 0.8 // Specifically, the percentage of the shoe from 0-1 that is dealt, 0.8 means 80% of the cards are dealt
 
-#define NUM_SIMULATIONS 100000 // Number of shoes to play
-#define BANKROLL 10000000
+#define NUM_SIMULATIONS 500 // Number of shoes to play
+#define BANKROLL 0
 #define WAGER 10
 
 // Note - insurance is not implemented yet, but insurance is never taken in basic strategy, so this shouldn't affect basic RTP calculations

@@ -1,7 +1,7 @@
 #ifndef HAND_H
 #define HAND_H
 
-#include "deck.h"
+#include "shoe.h"
 #include "metadata.h"
 
 typedef struct {
