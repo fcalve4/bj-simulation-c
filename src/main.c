@@ -21,9 +21,7 @@
 #define ENHC 0 // 0 for false
 #define MAX_SPLITS 4
 #define BJ_PAY 1.5
-#define PEN                                                                    \
-  0.8 // Specifically, the percentage of the shoe from 0-1 that is dealt, 0.8
-      // means 80% of the cards are dealt
+#define PEN 0.8 // % of shoe from 0-1 that is dealt out, 0.8 = 80%
 
 #define NUM_SIMULATIONS 500 // Number of shoes to play
 #define BANKROLL 0
@@ -70,20 +68,20 @@ int main(int argc, char *argv[]) {
                        0,         0,          0};
 
   // Call the simulate function to run the main game loop
-  simulate(out, NUM_SIMULATIONS, strategy, &metadata);
+  simulate(NUM_SIMULATIONS, strategy, &metadata);
 
-  printf("Total Shoes Played: %d\n", metadata.total_shoes_played);
-  printf("Total Hands Played: %d\n", metadata.total_hands_played);
-  printf("Total Wagered: %d\n", metadata.total_wagered);
-  printf("Total Won: %d\n", metadata.total_won);
-  printf("Bankroll: %d\n", metadata.bankroll);
+  fprintf(out, "Total Shoes Played: %d\n", metadata.total_shoes_played);
+  fprintf(out, "Total Hands Played: %d\n", metadata.total_hands_played);
+  fprintf(out, "Total Wagered: %d\n", metadata.total_wagered);
+  fprintf(out, "Total Won: %d\n", metadata.total_won);
+  fprintf(out, "Bankroll: %d\n", metadata.bankroll);
   double rtp = 100 * (double)(metadata.total_won) / (metadata.total_wagered);
-  printf("RTP: %f %%\n", rtp);
+  fprintf(out, "RTP: %f %%\n", rtp);
 
   // Stop the clock, calculate the elapsed time, print the result to terminal
   end = clock();
   cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
-  printf("Execution Time: %f seconds\n", cpu_time_used);
+  fprintf(out, "Execution Time: %f seconds\n", cpu_time_used);
 
   return 0;
 }

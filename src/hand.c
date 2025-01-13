@@ -16,7 +16,7 @@ void init_hand(Hand *hand) {
   hand->capacity = 5; // Initial capacity
 }
 
-int has_soft_ace(const Hand *hand) {
+int has_soft_ace(Hand *hand) {
   int value = 0;
   int aceCount = 0;
   for (int i = 0; i < hand->num_cards; i++) {
@@ -30,9 +30,9 @@ int has_soft_ace(const Hand *hand) {
   return aceCount > 0 && value <= 21;
 }
 
-int can_double(const Hand *hand) { return hand->num_cards == 2; }
+int can_double(Hand *hand) { return hand->num_cards == 2; }
 
-int can_split(const Hand *hand, Metadata *metadata) {
+int can_split(Hand *hand, Metadata *metadata) {
 
   if (metadata->num_times_split >= metadata->max_splits) {
     return 0;
@@ -40,7 +40,7 @@ int can_split(const Hand *hand, Metadata *metadata) {
 
   return hand->num_cards == 2 && hand->cards[0].rank == hand->cards[1].rank;
 }
-int can_surrender(const Hand *hand) { return hand->num_cards == 2; }
+int can_surrender(Hand *hand) { return hand->num_cards == 2; }
 
 void add_card_to_hand(Hand *hand, Card card) {
   // Sanity check for the Hand pointer
@@ -87,7 +87,7 @@ void free_hands(Hand *player_hand, Hand *dealer_hand) {
   free_hand(dealer_hand);
 }
 
-int get_hand_value(const Hand *hand) {
+int get_hand_value(Hand *hand) {
   int value = 0;
   int ace_count = 0;
 
@@ -112,4 +112,4 @@ int get_hand_value(const Hand *hand) {
   return value;
 }
 
-int is_bust(const Hand *hand) { return get_hand_value(hand) > 21; }
+int is_bust(Hand *hand) { return get_hand_value(hand) > 21; }
