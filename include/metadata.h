@@ -18,7 +18,6 @@ typedef struct {
   float pen;
 
   // Simulation parameters
-  int num_simulations;
   int bankroll;
   int wager;
   int wager_static; // temporary variable for splits
