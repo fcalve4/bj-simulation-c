@@ -8,23 +8,23 @@
 #define STRAT_COLS 10
 
 // Simulate functions
-void play_hand(FILE *out, Shoe *shoe, Hand *player_hand, Hand *dealer_hand,
+void play_hand(Shoe *shoe, Hand *player_hand, Hand *dealer_hand,
                char (*strategy)[STRAT_COLS], Metadata *metadata);
-void play_shoe(FILE *out, Hand *player_hand, Hand *dealer_hand,
+void play_shoe(Hand *player_hand, Hand *dealer_hand,
                char (*strategy)[STRAT_COLS], Metadata *metadata);
-int check_for_naturals(FILE *out, Hand *player_hand, Hand *dealer_hand,
+int check_for_naturals(Hand *player_hand, Hand *dealer_hand,
                        Metadata *metadata);
-int play_player_turn(FILE *out, Hand *player_hand, Hand *dealer_hand,
+int play_player_turn(Hand *player_hand, Hand *dealer_hand,
                      Shoe *shoe, char (*strategy)[STRAT_COLS],
                      Card dealer_upcard, int dealer_upcard_value,
                      Metadata *metadata);
-void play_dealer_turn(FILE *out, Hand *dealer_hand, Shoe *shoe, int h17);
-void determine_winner(FILE *out, Hand *player_hand, Hand *dealer_hand,
+void play_dealer_turn(Hand *dealer_hand, Shoe *shoe, int h17);
+void determine_winner(Hand *player_hand, Hand *dealer_hand,
                       Metadata *metadata);
-void split(FILE *out, Hand *player_hand, Hand *dealer_hand, Shoe *shoe,
+void split(Hand *player_hand, Hand *dealer_hand, Shoe *shoe,
            char (*strategy)[STRAT_COLS], Card dealer_upcard,
            int dealer_upcard_value, Metadata *metadata);
-void simulate(FILE *out, int num_simulations, char (*strategy)[STRAT_COLS],
+void simulate(int num_simulations, char (*strategy)[STRAT_COLS],
               Metadata *metadata);
 
 #endif
