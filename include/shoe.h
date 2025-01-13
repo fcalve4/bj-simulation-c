@@ -46,8 +46,37 @@ typedef struct {
  * @param numDecks: Number of decks to use for the shoe
  */
 void init_shoe(Shoe *shoe, int numDecks);
+
+/**
+ * @brief Shuffles the cards in the shoe.
+ * 
+ * This function uses a Fisher-Yates shuffle to randomize the order of
+ * the cards in the shoe. The top index is reset to 0 after shuffling.
+ * 
+ * @param shoe: Pointer to the shoe to shuffle
+ */
 void shuffle_shoe(Shoe *shoe);
+
+/**
+ * @brief Deals a card from the shoe.
+ * 
+ * This function returns the card at the top of the shoe and increments
+ * the top index. If the shoe is empty,/null an error message is printed 
+ * and the program exits.
+ * 
+ * @param shoe: Pointer to the shoe to deal from
+ * @return Card: The card dealt from the shoe
+ */
 Card deal_card(Shoe *shoe);
+
+/**
+ * @brief Frees the memory allocated for the shoe.
+ * 
+ * This function frees the dynamically allocated memory for the shoe and
+ * resets the attributes to 0 or NULL to avoid dangling pointers.
+ * 
+ * @param shoe: Pointer to the shoe to free
+ */
 void free_shoe(Shoe *shoe);
 
 #endif
