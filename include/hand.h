@@ -1,13 +1,16 @@
 #ifndef HAND_H
 #define HAND_H
 
-#include "shoe.h"
 #include "metadata.h"
+#include "shoe.h"
 
+/**
+ *
+ */
 typedef struct {
-    Card *cards;  // Dynamically allocated array for cards
-    int num_cards; // Number of cards in the hand
-    int capacity; // Capacity of the hand
+  Card *cards;   // Dynamically allocated array for cards
+  int num_cards; // Number of cards in the hand
+  int capacity;  // Capacity of the hand
 } Hand;
 
 // Hand functions
