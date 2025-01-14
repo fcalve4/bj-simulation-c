@@ -24,7 +24,6 @@ void determine_winner(Hand *player_hand, Hand *dealer_hand,
 void split(Hand *player_hand, Hand *dealer_hand, Shoe *shoe,
            char (*strategy)[STRAT_COLS], Card dealer_upcard,
            int dealer_upcard_value, Metadata *metadata);
-void simulate(int num_simulations, char (*strategy)[STRAT_COLS],
-              Metadata *metadata);
+void simulate(char (*strategy)[STRAT_COLS], Metadata *metadata);
 
 #endif

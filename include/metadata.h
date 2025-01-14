@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 // Metadata struct for storing user input / game constants
-
 typedef struct {
   // Rules
   int num_decks;
@@ -18,6 +17,7 @@ typedef struct {
   float pen;
 
   // Simulation parameters
+  int num_simulations;
   int bankroll;
   int wager;
   int wager_static; // temporary variable for splits
