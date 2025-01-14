@@ -20,7 +20,7 @@
 #define MAX_SPLITS 4
 #define BJ_PAY 1.5
 #define PEN 0.8               // % of shoe from 0-1 that is dealt out, 0.8 = 80%
-#define NUM_SIMULATIONS 500  // Number of shoes to play
+#define NUM_SIMULATIONS 10000  // Number of shoes to play
 #define BANKROLL 10000
 #define WAGER 10
 

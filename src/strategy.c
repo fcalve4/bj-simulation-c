@@ -34,7 +34,7 @@ char determine_action(Hand *player_hand, int dealer_upcard,
 
   if (can_split(player_hand, metadata)) {
     int value =
-        player_hand->cards[0].rank;  // Store the card that we have two of
+        player_hand->cards[0];  // Store the card that we have two of
     // For splitable hands, decisions start at row #28 and index 27 (zero index
     // for array) The row index will stay at 27 for a deuce, and increase by one
     // for every value we increase, so we subtract 2 and add the value of the

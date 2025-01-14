@@ -8,14 +8,14 @@
  *
  */
 typedef struct {
-  Card* cards;    // Dynamically allocated array for cards
+  int* cards;    // Dynamically allocated array for cards
   int num_cards;  // Number of cards in the hand
   int capacity;   // Capacity of the hand
 } Hand;
 
 // Hand functions
 void init_hand(Hand* hand);
-void add_card_to_hand(Hand* hand, Card card);
+void add_card_to_hand(Hand* hand, int card);
 int get_hand_value(Hand* hand);
 int is_bust(Hand* hand);
 void free_hand(Hand* hand);

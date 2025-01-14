@@ -23,7 +23,7 @@ void play_hand(Shoe* shoe, Hand* player_hand, Hand* dealer_hand,
   add_card_to_hand(player_hand, deal_card(shoe));
 
   // Deal initial cards to dealer
-  Card dealer_upcard = deal_card(shoe);
+  int dealer_upcard = deal_card(shoe);
   add_card_to_hand(dealer_hand, dealer_upcard);
   // Grab dealer upcard value, store it separately (to check for naturals)
 
@@ -86,10 +86,10 @@ void play_shoe(Hand* player_hand, Hand* dealer_hand,
 }
 
 void split(Hand* player_hand, Hand* dealer_hand, Shoe* shoe,
-           char (*strategy)[STRAT_COLS], Card dealer_upcard,
+           char (*strategy)[STRAT_COLS], int dealer_upcard,
            int dealer_upcard_value, Metadata* metadata) {
   // Grab the split card
-  Card split_card = player_hand->cards[0];
+  int split_card = player_hand->cards[0];
   //  Create a new loop for the split off hand.
   int split_loop_bool = 1;
   // Reinitialize the player's hand and add the split card + additional card
@@ -127,7 +127,7 @@ void split(Hand* player_hand, Hand* dealer_hand, Shoe* shoe,
 // and returns 0 or 1 depending on if loop continues or breaks.
 // returns 2 for surrender, as this is a special case
 int play_player_turn(Hand* player_hand, Hand* dealer_hand, Shoe* shoe,
-                     char (*strategy)[STRAT_COLS], Card dealer_upcard,
+                     char (*strategy)[STRAT_COLS], int dealer_upcard,
                      int dealer_upcard_value, Metadata* metadata) {
   // Determine player action based on strategy sheet
   char action;

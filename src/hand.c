@@ -7,8 +7,8 @@
 #include "shoe.h"
 
 void init_hand(Hand* hand) {
-  hand->cards = (Card*)malloc(
-      5 * sizeof(Card));  // Initial size is 5 for what should it be?
+  hand->cards = (int*)malloc(
+      5 * sizeof(int));  // Initial size is 5 for what should it be?
   if (hand->cards == NULL) {
     fprintf(stderr, "Error: Memory allocation for hand failed.\n");
     exit(1);
@@ -21,11 +21,11 @@ int has_soft_ace(Hand* hand) {
   int value = 0;
   int aceCount = 0;
   for (int i = 0; i < hand->num_cards; i++) {
-    if (hand->cards[i].rank == 1) {
+    if (hand->cards[i] == 1) {
       aceCount++;
       value += 11;
     } else {
-      value += hand->cards[i].rank;
+      value += hand->cards[i];
     }
   }
   return aceCount > 0 && value <= 21;
@@ -38,11 +38,11 @@ int can_split(Hand* hand, Metadata* metadata) {
     return 0;
   }
 
-  return hand->num_cards == 2 && hand->cards[0].rank == hand->cards[1].rank;
+  return hand->num_cards == 2 && hand->cards[0] == hand->cards[1];
 }
 int can_surrender(Hand* hand) { return hand->num_cards == 2; }
 
-void add_card_to_hand(Hand* hand, Card card) {
+void add_card_to_hand(Hand* hand, int card) {
   // Sanity check for the Hand pointer
   if (hand == NULL) {
     fprintf(stderr, "Error: Hand pointer is NULL.\n");
@@ -60,7 +60,7 @@ void add_card_to_hand(Hand* hand, Card card) {
   // Check if resizing is necessary
   if (hand->num_cards >= hand->capacity) {
     hand->capacity *= 2;  // Double the capacity
-    Card* newCards = realloc(hand->cards, hand->capacity * sizeof(Card));
+    int* newCards = realloc(hand->cards, hand->capacity * sizeof(int));
 
     // Check if realloc failed
     if (newCards == NULL) {
@@ -93,7 +93,7 @@ int get_hand_value(Hand* hand) {
   int ace_count = 0;
 
   for (int i = 0; i < hand->num_cards; i++) {
-    int rank = hand->cards[i].rank;
+    int rank = hand->cards[i];
     if (rank > 10) {
       value += 10;  // Face cards are worth 10
     } else if (rank == 1) {
