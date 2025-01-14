@@ -64,7 +64,6 @@ The following flags can be used to modify the simulation behavior:
 
 | Flag    | Description | Default Value |
 | -------- | ------- | ------- |
-| January  | $250    | 
 | --num-decks |	Number of decks used in the game | 6 |
 | -h17 |	Dealer hits on soft 17 (1: enabled, 0: disabled) | 1 |
 | -ls	| Late surrender allowed (1: enabled, 0: disabled) | 0 |
