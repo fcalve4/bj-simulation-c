@@ -58,7 +58,39 @@ If you have files `basic_strategy.csv` and `output.txt`, execute:
 ./bin/bj_sim basic_strategy.csv output.txt
 ```
 
-This will simulate blackjack hands based on the specified strategy and provide detailed output of the simulation results.
+### Optional Flags
+
+The following flags can be used to modify the simulation behavior:
+
+| Flag    | Description | Default Value |
+| -------- | ------- | ------- |
+| January  | $250    | 
+| --num-decks |	Number of decks used in the game | 6 |
+| -h17 |	Dealer hits on soft 17 (1: enabled, 0: disabled) | 1 |
+| -ls	| Late surrender allowed (1: enabled, 0: disabled) | 0 |
+| -das |	Double after split allowed (1: enabled, 0: disabled) | 1 |
+| -rsa | Re-splitting aces allowed (1: enabled, 0: disabled)	| 1 |
+| -enhc | European No Hole Card rule (1: enabled, 0: disabled) |	0 |
+| --max-splits | Maximum number of splits allowed |	4 |
+| --bj-pay | Blackjack payout multiplier (e.g., 1.5 for 3:2) |	1.5 |
+| -pen Deck | penetration percentage (e.g., 0.75 for 75%)	| 0.75 |
+| --num-simulations | Number of hands to simulate	| 1,000,000 |
+| -bankroll | Starting bankroll for the simulation |	10,000 |
+| -wager | Wager amount per hand | 10 |
+
+### Optional Flags
+
+To run a simulation with a specific set of rules, use the flags like so:
+
+```bash
+./bin/bj_sim basic_strategy.csv output.txt --num-decks 8 -ls 1 --bj-pay 1.2 --num-simulations 500000
+```
+
+This example sets:
+- 8 decks in play.
+- Late surrender enabled.
+- Blackjack payout set to 6:5.
+- 5,000,000 hands simulated.
 
 ---
 ## Strategy File Format
