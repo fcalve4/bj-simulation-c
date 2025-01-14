@@ -1,11 +1,11 @@
+#include "shoe.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "shoe.h"
-
 // "Deck" & "Shoe" are interchangeable in this program
-void init_shoe(Shoe *shoe, int num_decks) {
-  shoe->cards = (Card *)malloc(52 * num_decks * sizeof(Card));
+void init_shoe(Shoe* shoe, int num_decks) {
+  shoe->cards = (Card*)malloc(52 * num_decks * sizeof(Card));
   shoe->num_cards = shoe->capacity;
   shoe->capacity = 52 * num_decks;
   shoe->top = 0;
@@ -20,7 +20,7 @@ void init_shoe(Shoe *shoe, int num_decks) {
   for (int d = 0; d < num_decks; d++) {
     for (int rank = 1; rank <= 13; rank++) {
       for (int count = 0; count < 4; count++) {
-        // adjust to only add tens to the deck and not 11,12,13
+        // adjust to only add tens to the deck and not 11,12,13 
         if (rank <= 10) {
           shoe->cards[index].rank = rank;
         } else {
@@ -32,25 +32,25 @@ void init_shoe(Shoe *shoe, int num_decks) {
   }
 }
 
-void free_shoe(Shoe *shoe) {
-  free(shoe->cards);  // Free the dynamically allocated memory
-  shoe->cards = NULL; // Avoid dangling pointer
+void free_shoe(Shoe* shoe) {
+  free(shoe->cards);   // Free the dynamically allocated memory
+  shoe->cards = NULL;  // Avoid dangling pointer
   shoe->num_cards = 0;
   shoe->capacity = 0;
-  shoe->top = 0; // Reset the top index after freeing memory
+  shoe->top = 0;  // Reset the top index after freeing memory
 }
 
-void shuffle_shoe(Shoe *shoe) {
+void shuffle_shoe(Shoe* shoe) {
   for (int i = shoe->capacity - 1; i > 0; i--) {
     int j = rand() % (i + 1);
     Card temp = shoe->cards[i];
     shoe->cards[i] = shoe->cards[j];
     shoe->cards[j] = temp;
   }
-  shoe->top = 0; // Reset the top index after shuffle
+  shoe->top = 0;  // Reset the top index after shuffle
 }
 
-Card deal_card(Shoe *shoe) {
+Card deal_card(Shoe* shoe) {
   if (shoe->cards == NULL || shoe->top >= shoe->capacity) {
     printf("shoe->top: %d\n", shoe->top);
     printf("shoe->capacity: %d\n", shoe->capacity);

@@ -1,14 +1,15 @@
+#include "simulate.h"
+
 #include <stdio.h>
 
 #include "metadata.h"
 #include "shoe.h"
-#include "simulate.h"
 #include "strategy.h"
 
 #define STRAT_COLS 10
 
-void play_hand(Shoe *shoe, Hand *player_hand, Hand *dealer_hand,
-               char (*strategy)[STRAT_COLS], Metadata *metadata) {
+void play_hand(Shoe* shoe, Hand* player_hand, Hand* dealer_hand,
+               char (*strategy)[STRAT_COLS], Metadata* metadata) {
   // Increment hand counter
   metadata->total_hands_played++;
   //  RESET WAGER TO DEFAULT
@@ -39,14 +40,14 @@ void play_hand(Shoe *shoe, Hand *player_hand, Hand *dealer_hand,
     }
   }
   // Player turn to act
-  int player_turn_loop_bool = 1; // LOOP ACTIVE BOOLEAN
+  int player_turn_loop_bool = 1;  // LOOP ACTIVE BOOLEAN
   // While the player is still acting, call the player turn function
   while (player_turn_loop_bool == 1 && get_hand_value(player_hand) < 21) {
     player_turn_loop_bool =
         play_player_turn(player_hand, dealer_hand, shoe, strategy,
                          dealer_upcard, dealer_upcard_value, metadata);
   }
-  if (player_turn_loop_bool == 2) // IF THEY PLAYER HAS SURRENDERD,
+  if (player_turn_loop_bool == 2)  // IF THEY PLAYER HAS SURRENDERD,
   {
     // continue to the start of the loop and don't evaluate hands
     return;
@@ -70,8 +71,8 @@ void play_hand(Shoe *shoe, Hand *player_hand, Hand *dealer_hand,
   free_hands(player_hand, dealer_hand);
 }
 
-void play_shoe(Hand *player_hand, Hand *dealer_hand,
-               char (*strategy)[STRAT_COLS], Metadata *metadata) {
+void play_shoe(Hand* player_hand, Hand* dealer_hand,
+               char (*strategy)[STRAT_COLS], Metadata* metadata) {
   // Init and shuffle the shoe
   Shoe shoe;
   init_shoe(&shoe, metadata->num_decks);
@@ -84,9 +85,9 @@ void play_shoe(Hand *player_hand, Hand *dealer_hand,
   free_shoe(&shoe);
 }
 
-void split(Hand *player_hand, Hand *dealer_hand, Shoe *shoe,
+void split(Hand* player_hand, Hand* dealer_hand, Shoe* shoe,
            char (*strategy)[STRAT_COLS], Card dealer_upcard,
-           int dealer_upcard_value, Metadata *metadata) {
+           int dealer_upcard_value, Metadata* metadata) {
   // Grab the split card
   Card split_card = player_hand->cards[0];
   //  Create a new loop for the split off hand.
@@ -125,16 +126,13 @@ void split(Hand *player_hand, Hand *dealer_hand, Shoe *shoe,
 // This function will determine the player's action based on the strategy sheet
 // and returns 0 or 1 depending on if loop continues or breaks.
 // returns 2 for surrender, as this is a special case
-int play_player_turn(Hand *player_hand, Hand *dealer_hand,
-                     Shoe *shoe, char (*strategy)[STRAT_COLS],
-                     Card dealer_upcard, int dealer_upcard_value,
-                     Metadata *metadata) {
-
+int play_player_turn(Hand* player_hand, Hand* dealer_hand, Shoe* shoe,
+                     char (*strategy)[STRAT_COLS], Card dealer_upcard,
+                     int dealer_upcard_value, Metadata* metadata) {
   // Determine player action based on strategy sheet
   char action;
   action =
       determine_action(player_hand, dealer_upcard_value, strategy, metadata);
-
 
   // ORDER OF OPERATIONS
   // 1. Can/Should the player surrender?
@@ -227,11 +225,10 @@ int play_player_turn(Hand *player_hand, Hand *dealer_hand,
   } else {
     return 0;
   }
-  return 1; // Default is to hit
+  return 1;  // Default is to hit
 }
 
-
-void play_dealer_turn(Hand *dealer_hand, Shoe *shoe, int h17) {
+void play_dealer_turn(Hand* dealer_hand, Shoe* shoe, int h17) {
   //  Dealer turn to act
   //  case 1: H17, dealer hits on soft 17s
   if (h17 == 1) {
@@ -240,15 +237,15 @@ void play_dealer_turn(Hand *dealer_hand, Shoe *shoe, int h17) {
             get_hand_value(dealer_hand) == 17)) {
       add_card_to_hand(dealer_hand, deal_card(shoe));
     }
-  } else { // case 2: S17, dealer stands on all 17s 
+  } else {  // case 2: S17, dealer stands on all 17s
     while (get_hand_value(dealer_hand) < 17) {
       add_card_to_hand(dealer_hand, deal_card(shoe));
     }
   }
 }
 
-void determine_winner(Hand *player_hand, Hand *dealer_hand,
-                      Metadata *metadata) {
+void determine_winner(Hand* player_hand, Hand* dealer_hand,
+                      Metadata* metadata) {
   // Determine winner, Player wins if dealer busts or has a higher hand
 
   if (is_bust(player_hand)) {
@@ -285,8 +282,8 @@ void determine_winner(Hand *player_hand, Hand *dealer_hand,
 
 // CONTINUES TO NEXT HAND IF A NATURAL OCCURS, NEED TO FREE HANDS IF THIS
 // HAPPENS TOO
-int check_for_naturals(Hand *player_hand, Hand *dealer_hand,
-                       Metadata *metadata) {
+int check_for_naturals(Hand* player_hand, Hand* dealer_hand,
+                       Metadata* metadata) {
   // If both players have blackjack
   if (get_hand_value(player_hand) == 21 && get_hand_value(dealer_hand) == 21) {
     // Update metadata counters
@@ -314,8 +311,7 @@ int check_for_naturals(Hand *player_hand, Hand *dealer_hand,
   return 0;
 }
 
-void simulate(char (*strategy)[STRAT_COLS],
-              Metadata *metadata) {
+void simulate(char (*strategy)[STRAT_COLS], Metadata* metadata) {
   Hand player_hand;
   Hand dealer_hand;
   for (int i = 0; i < metadata->num_simulations; i++) {

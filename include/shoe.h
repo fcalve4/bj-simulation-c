@@ -17,8 +17,8 @@
  * 10-13 represents face cards (10-value), while 1 represents an Ace.
  */
 typedef struct {
-  int rank; // "Rank" of the card, 1-13 (1 = Ace, 11 = Jack, 12 = Queen, 13 =
-            // King)
+  int rank;  // "Rank" of the card, 1-13 (1 = Ace, 11 = Jack, 12 = Queen, 13 =
+             // King)
 } Card;
 
 /**
@@ -30,10 +30,10 @@ typedef struct {
  * before being dealt.
  */
 typedef struct {
-  Card *cards;   // Dynamically allocated array of Cards
-  int num_cards; // Current number of cards in card array
-  int capacity;  // Maximum capacity of the array
-  int top;       // Index of the top card in the shoe
+  Card* cards;    // Dynamically allocated array of Cards
+  int num_cards;  // Current number of cards in card array
+  int capacity;   // Maximum capacity of the array
+  int top;        // Index of the top card in the shoe
 } Shoe;
 
 /**
@@ -46,7 +46,7 @@ typedef struct {
  * @param shoe: Pointer to the deck to initialize
  * @param numDecks: Number of decks to use for the shoe
  */
-void init_shoe(Shoe *shoe, int numDecks);
+void init_shoe(Shoe* shoe, int numDecks);
 
 /**
  * @brief Shuffles the cards in the shoe.
@@ -56,7 +56,7 @@ void init_shoe(Shoe *shoe, int numDecks);
  *
  * @param shoe: Pointer to the shoe to shuffle
  */
-void shuffle_shoe(Shoe *shoe);
+void shuffle_shoe(Shoe* shoe);
 
 /**
  * @brief Deals a card from the shoe.
@@ -68,7 +68,7 @@ void shuffle_shoe(Shoe *shoe);
  * @param shoe: Pointer to the shoe to deal from
  * @return Card: The card dealt from the shoe
  */
-Card deal_card(Shoe *shoe);
+Card deal_card(Shoe* shoe);
 
 /**
  * @brief Frees the memory allocated for the shoe.
@@ -78,6 +78,6 @@ Card deal_card(Shoe *shoe);
  *
  * @param shoe: Pointer to the shoe to free
  */
-void free_shoe(Shoe *shoe);
+void free_shoe(Shoe* shoe);
 
 #endif
