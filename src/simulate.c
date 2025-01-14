@@ -24,10 +24,9 @@ void play_hand(Shoe *shoe, Hand *player_hand, Hand *dealer_hand,
   // Deal initial cards to dealer
   Card dealer_upcard = deal_card(shoe);
   add_card_to_hand(dealer_hand, dealer_upcard);
-  // Grab the dealer upcard value now and store it separately (this is to check
-  // for naturals)
+  // Grab dealer upcard value, store it separately (to check for naturals)
+
   int dealer_upcard_value = get_hand_value(dealer_hand);
-  // fprintf("Dealer Upcard Value: %d\n", dealer_upcard_value);
   //  Deal the dealer another hand
   add_card_to_hand(dealer_hand, deal_card(shoe));
   // If enhc is false (usually it is), check for naturals immediately
@@ -187,9 +186,6 @@ int play_player_turn(Hand *player_hand, Hand *dealer_hand,
   }
 
   // Player split
-  // It looks like theres a bug in the split logic
-  // When player splits for the first hand the dealer logic isnt played out,
-  // dealer stands on 14, stuff like this etc
   else if (action == 'P') {
     if (can_split(player_hand, metadata)) {
       // Split the hand
@@ -244,9 +240,7 @@ void play_dealer_turn(Hand *dealer_hand, Shoe *shoe, int h17) {
             get_hand_value(dealer_hand) == 17)) {
       add_card_to_hand(dealer_hand, deal_card(shoe));
     }
-  }
-  // case 2: S17, dealer stands on all 17s
-  else {
+  } else { // case 2: S17, dealer stands on all 17s 
     while (get_hand_value(dealer_hand) < 17) {
       add_card_to_hand(dealer_hand, deal_card(shoe));
     }
@@ -295,11 +289,6 @@ int check_for_naturals(Hand *player_hand, Hand *dealer_hand,
                        Metadata *metadata) {
   // If both players have blackjack
   if (get_hand_value(player_hand) == 21 && get_hand_value(dealer_hand) == 21) {
-    for (int i = 0; i < dealer_hand->num_cards; i++) {
-    }
-    for (int i = 0; i < player_hand->num_cards; i++) {
-    }
-
     // Update metadata counters
     metadata->total_won += metadata->wager * metadata->bj_pay;
     metadata->total_wagered +=
@@ -308,7 +297,6 @@ int check_for_naturals(Hand *player_hand, Hand *dealer_hand,
   }
   // If player has blackjack
   else if (get_hand_value(player_hand) == 21) {
-
     // Update metadata counters
     metadata->total_won += metadata->wager * metadata->bj_pay + metadata->wager;
     metadata->total_wagered += metadata->wager;
@@ -317,7 +305,6 @@ int check_for_naturals(Hand *player_hand, Hand *dealer_hand,
   }
   // If dealer has blackjack
   else if (get_hand_value(dealer_hand) == 21) {
-
     // Update metadata counters
     metadata->total_wagered += metadata->wager;
     metadata->bankroll -= metadata->wager;
@@ -327,12 +314,12 @@ int check_for_naturals(Hand *player_hand, Hand *dealer_hand,
   return 0;
 }
 
-void simulate(int num_simulations, char (*strategy)[STRAT_COLS],
+void simulate(char (*strategy)[STRAT_COLS],
               Metadata *metadata) {
   Hand player_hand;
   Hand dealer_hand;
-  for (int i = 0; i < num_simulations; i++) {
-    metadata->total_shoes_played++;
+  for (int i = 0; i < metadata->num_simulations; i++) {
     play_shoe(&player_hand, &dealer_hand, strategy, metadata);
+    metadata->total_shoes_played++;
   }
 }
