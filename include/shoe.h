@@ -5,11 +5,9 @@
  * @file: shoe.h
  * @author: fcalve4
  *
- * This file contains the declarations for the Shoe struct and related 
+ * This file contains the declarations for the Shoe struct and related
  * functions.
  */
-
-
 
 /**
  * @struct Shoe
@@ -21,10 +19,10 @@
  * before being dealt. Any reference to "card" refers to an integer.
  */
 typedef struct {
-  int* cards;    // Dynamically allocated array of ints representing cards
-  int num_cards;  // Current number of cards in card array
-  int capacity;   // Maximum capacity of the array
-  int top;        // Index of the top card in the shoe
+    int* cards;     // Dynamically allocated array of ints representing cards
+    int num_cards;  // Current number of cards in card array
+    int capacity;   // Maximum capacity of the array
+    int top;        // Index of the top card in the shoe
 } Shoe;
 
 /**

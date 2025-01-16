@@ -8,9 +8,9 @@
  *
  */
 typedef struct {
-  int* cards;    // Dynamically allocated array for cards
-  int num_cards;  // Number of cards in the hand
-  int capacity;   // Capacity of the hand
+    int* cards;     // Dynamically allocated array for cards
+    int num_cards;  // Number of cards in the hand
+    int capacity;   // Capacity of the hand
 } Hand;
 
 // Hand functions
