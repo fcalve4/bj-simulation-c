@@ -5,21 +5,26 @@
 
 // "Deck" & "Shoe" are interchangeable in this program
 void init_shoe(Shoe* shoe, int num_decks) {
+    // Dynamically allocate memory for shoe
     shoe->cards = (int*)malloc(52 * num_decks * sizeof(int));
     shoe->num_cards = shoe->capacity;
     shoe->capacity = 52 * num_decks;
-    shoe->top = 0;
+    shoe->top = 0; // Current index of the shoe
 
+    // Safety check
     if (shoe->cards == NULL) {
         fprintf(stderr, "Error: Memory allocation for shoe failed.\n");
         exit(1);
     }
     // Populate the shoe with cards
     int index = 0;
-    for (int d = 0; d < num_decks; d++) {
+    // For every deck in the shoe
+    for (int deck = 0; deck < num_decks; deck++) {
+        // For every type of card in a deck 
         for (int rank = 1; rank <= 13; rank++) {
+            // For every suit for every card in a deck
             for (int count = 0; count < 4; count++) {
-                // adjust to only add tens to the deck and not 11,12,13
+                // Add the card to the shoe including 4 tens
                 if (rank <= 10) {
                     shoe->cards[index] = rank;
                 } else {
@@ -40,6 +45,7 @@ void free_shoe(Shoe* shoe) {
 }
 
 void shuffle_shoe(Shoe* shoe) {
+    // Fischer-Yates shuffle algorithmn to shuffle the order of cards
     for (int i = shoe->capacity - 1; i > 0; i--) {
         int j = rand() % (i + 1);
         int temp = shoe->cards[i];
@@ -54,7 +60,7 @@ int deal_card(Shoe* shoe) {
         printf("shoe->top: %d\n", shoe->top);
         printf("shoe->capacity: %d\n", shoe->capacity);
         fprintf(stderr, "Error: No more cards in the shoe.\n");
-        exit(1);
+        exit(1); // Exit the function if there are no more cards in the shoe
     }
     return shoe->cards[shoe->top++];
 }

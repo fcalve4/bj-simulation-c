@@ -14,6 +14,7 @@ void play_hand(Shoe* shoe, Hand* player_hand, Hand* dealer_hand, char (*strategy
     metadata->total_hands_played++;
     //  RESET WAGER TO DEFAULT
     metadata->wager = metadata->wager_static;
+
     // Init hands
     init_hand(player_hand);
     init_hand(dealer_hand);
@@ -48,7 +49,7 @@ void play_hand(Shoe* shoe, Hand* player_hand, Hand* dealer_hand, char (*strategy
     }
     if (player_turn_loop_bool == 2)  // IF THEY PLAYER HAS SURRENDERD,
     {
-        // continue to the start of the loop and don't evaluate hands
+        // continue to the start of the loop and don't evaluate hands, this is needed so the metadata isn't updated twice 
         return;
     }
     // If enhc is true (rarely is), check for naturals after player acts
@@ -62,9 +63,9 @@ void play_hand(Shoe* shoe, Hand* player_hand, Hand* dealer_hand, char (*strategy
             return;
         }
     }
-    // -=-=-DEALER TURN TO ACT-=-=-
+    // Play dealer turn, evaluate hand, free hands
     play_dealer_turn(dealer_hand, shoe, metadata->h17);
-    // Determine the winner
+
     determine_winner(player_hand, dealer_hand, metadata);
 
     free_hands(player_hand, dealer_hand);
