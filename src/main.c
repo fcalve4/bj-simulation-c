@@ -60,6 +60,19 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
+    // Open strategy file & perform sanity check
+    FILE* strategy_file = fopen(argv[1], "r");
+    if (!strategy_file) {
+        fprintf(stderr, "Error: Could not open strategy file.\n");
+        return -1;
+    }
+    // Open output file & perform sanity check
+    FILE* out = fopen(argv[2], "w");
+    if (!out) {
+        fprintf(stderr, "Error: Could not open output file.\n");
+        return -1;
+    }
+
     // Check for provided flags & set values accordingly
     for (int i = 2; i < argc; i++) {
         if (strcmp(argv[i], "--num-decks") == 0) {
@@ -89,9 +102,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // Open strategy file & output file
-    FILE* strategy_file = fopen(argv[1], "r");
-    FILE* out = fopen(argv[2], "w");
+    
 
     // Seed random numbers
     srand(time(NULL));
