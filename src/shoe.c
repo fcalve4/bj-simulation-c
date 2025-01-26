@@ -11,7 +11,6 @@ void init_shoe(Shoe* shoe, int num_decks) {
     shoe->capacity = 52 * num_decks;
     shoe->top = 0; // Current index of the shoe
 
-    // Safety check
     if (shoe->cards == NULL) {
         fprintf(stderr, "Error: Memory allocation for shoe failed.\n");
         exit(1);
@@ -57,8 +56,6 @@ void shuffle_shoe(Shoe* shoe) {
 
 int deal_card(Shoe* shoe) {
     if (shoe->cards == NULL || shoe->top >= shoe->capacity) {
-        printf("shoe->top: %d\n", shoe->top);
-        printf("shoe->capacity: %d\n", shoe->capacity);
         fprintf(stderr, "Error: No more cards in the shoe.\n");
         exit(1); // Exit the function if there are no more cards in the shoe
     }

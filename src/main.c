@@ -20,8 +20,8 @@
 #define MAX_SPLITS 4
 #define BJ_PAY 1.5
 #define PEN 0.8                // % of shoe from 0-1 that is dealt out, 0.8 = 80%
-#define NUM_SIMULATIONS 10000  // Number of shoes to play
-#define BANKROLL 10000
+#define NUM_SIMULATIONS 500000  // Number of shoes to play
+#define BANKROLL 10000000
 #define WAGER 10
 
 // Note - insurance is not implemented yet, but insurance is never taken in
@@ -60,13 +60,14 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    // Open strategy file & perform sanity check
+    // Open strategy file
     FILE* strategy_file = fopen(argv[1], "r");
     if (!strategy_file) {
         fprintf(stderr, "Error: Could not open strategy file.\n");
         return -1;
     }
-    // Open output file & perform sanity check
+
+    // Open output file
     FILE* out = fopen(argv[2], "w");
     if (!out) {
         fprintf(stderr, "Error: Could not open output file.\n");
@@ -102,12 +103,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    
-
-    // Seed random numbers
-    srand(time(NULL));
-
-    // Allocate memory for the strategy sheet
+    // Allocate memory for the strategy sheet (2d array)
     // 40 rows (soft, hard, splits, surrenders AND 10 columns [2-A]
     char strategy[STRAT_ROWS][STRAT_COLS];
     memset(strategy, 0, sizeof(strategy));
@@ -117,6 +113,9 @@ int main(int argc, char* argv[]) {
     Metadata metadata = {
             num_decks,       h17,      ls,    das,   rsa, enhc, max_splits, bj_pay, pen,
             num_simulations, bankroll, wager, wager, 0,   0,    0,          0,      0};
+
+    // Seed random numbers
+    srand(time(NULL));
 
     // Call the simulate function to run the main game loop
     simulate(strategy, &metadata);
@@ -145,9 +144,10 @@ int main(int argc, char* argv[]) {
     fprintf(out, "Total Hands Played: %d\n", metadata.total_hands_played);
     fprintf(out, "Total Wagered: %d\n", metadata.total_wagered);
     fprintf(out, "Total Won: %d\n", metadata.total_won);
-    fprintf(out, "Bankroll: %d\n", metadata.bankroll);
+    fprintf(out, "Bankroll: %d ---> %d\n", bankroll, metadata.bankroll);
     double rtp = 100 * (double)(metadata.total_won) / (metadata.total_wagered);
     fprintf(out, "RTP: %f %%\n", rtp);
+    fprintf(out, "House Edge: %f\n", 100 - rtp);
 
     // Stop the clock, calculate the elapsed time, print the result to output
     end = clock();

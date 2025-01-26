@@ -33,12 +33,14 @@ int has_soft_ace(Hand* hand) {
 int can_double(Hand* hand) { return hand->num_cards == 2; }
 
 int can_split(Hand* hand, Metadata* metadata) {
+    // Check if player has already split the max # of times
     if (metadata->num_times_split >= metadata->max_splits) {
         return 0;
     }
 
     return hand->num_cards == 2 && hand->cards[0] == hand->cards[1];
 }
+
 int can_surrender(Hand* hand) { return hand->num_cards == 2; }
 
 void add_card_to_hand(Hand* hand, int card) {
@@ -50,9 +52,7 @@ void add_card_to_hand(Hand* hand, int card) {
 
     // Sanity check for the Cards pointer
     if (hand->cards == NULL) {
-        fprintf(stderr,
-                "Error: Hand->cards pointer is NULL. Ensure hand is "
-                "initialized properly.\n");
+        fprintf(stderr, "Error: Hand->cards pointer is NULL. Ensure hand is initialized properly.\n");
         exit(1);
     }
 

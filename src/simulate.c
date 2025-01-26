@@ -133,8 +133,8 @@ int play_player_turn(Hand* player_hand, Hand* dealer_hand, Shoe* shoe, char (*st
     // ORDER OF OPERATIONS
     // 1. Can/Should the player surrender?
     // 2. Can/Should the player split?
-    // 2. Can/Should the player double?
-    // 2. Should the player hit/stand?
+    // 3. Can/Should the player double?
+    // 4. Should the player hit/stand?
 
     // Player Surrender otherwise stand
     if (action == 'X') {
@@ -145,6 +145,7 @@ int play_player_turn(Hand* player_hand, Hand* dealer_hand, Shoe* shoe, char (*st
             metadata->bankroll -= metadata->wager / 2;
             return 2;
         }
+        // Else stand
         return 0;
     }
     // Player Surrender otherwise hit
@@ -168,13 +169,12 @@ int play_player_turn(Hand* player_hand, Hand* dealer_hand, Shoe* shoe, char (*st
             metadata->bankroll -= metadata->wager / 2;
             return 2;
         }
-        // else split
+        // else split if possible
         else {
             if (can_split(player_hand, metadata)) {
                 // Split the hand
                 metadata->num_times_split++;
-                split(player_hand, dealer_hand, shoe, strategy, dealer_upcard, dealer_upcard_value,
-                      metadata);
+                split(player_hand, dealer_hand, shoe, strategy, dealer_upcard, dealer_upcard_value, metadata);
             }
         }
     }
@@ -184,8 +184,7 @@ int play_player_turn(Hand* player_hand, Hand* dealer_hand, Shoe* shoe, char (*st
         if (can_split(player_hand, metadata)) {
             // Split the hand
             metadata->num_times_split++;
-            split(player_hand, dealer_hand, shoe, strategy, dealer_upcard, dealer_upcard_value,
-                  metadata);
+            split(player_hand, dealer_hand, shoe, strategy, dealer_upcard, dealer_upcard_value, metadata);
         }
     }
 
